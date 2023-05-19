@@ -1,11 +1,18 @@
 import json 
 import socket 
 from kafka import KafkaProducer
+import os 
+from dotenv import load_dotenv
+load_dotenv()
+
+PORT = int(os.getenv("PORT"))
+SERVER = os.getenv("SERVER")
+bootstrap_servers=os.getenv("bootstrap_servers")
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.connect(('localhost', 8080))
+server_socket.connect((SERVER, PORT))
 producer = KafkaProducer(
-    bootstrap_servers=['localhost:9092'],
+    bootstrap_servers=bootstrap_servers,
     api_version=(0, 11, 5),
     value_serializer=lambda m: json.dumps(m).encode("utf-8"),
     retries=5

@@ -2,8 +2,15 @@ from kafka import KafkaConsumer
 import json
 import pymongo
 from pydantic import BaseModel
-client = pymongo.MongoClient("mongodb+srv://LebakuVasantha:Vasantha123@scmcluster.b0fcmnz.mongodb.net/SCM?retryWrites=true&w=majority")
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+mongouri=os.getenv("mongouri")
+client = pymongo.MongoClient(mongouri)
 deviceData = client["SCM"]["deviceData"]
+bootstrap_servers=os.getenv('bootstrap_servers')
 class DeviceData(BaseModel):
     Battery_Level: float
     Device_ID: int
@@ -13,7 +20,7 @@ class DeviceData(BaseModel):
 consumer = KafkaConsumer('SCM',
                          group_id='my-group',
                          api_version=(0, 11, 5),
-                         bootstrap_servers=['localhost:9092'])
+                         bootstrap_servers=bootstrap_servers)
 try:
     for message in consumer:
         data_dict = json.loads(message.value.decode('utf-8'))

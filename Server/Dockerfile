@@ -4,4 +4,6 @@ WORKDIR .
 
 COPY . .
 
+RUN python-dotenv
+
 CMD ["python","server.py"]

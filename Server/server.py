@@ -3,9 +3,13 @@ import errno
 import json
 import time
 import random
+import os
+from dotenv import load_dotenv
 
-PORT = 8080
-SERVER = 'localhost'
+load_dotenv()
+
+PORT = int(os.getenv("PORT"))
+SERVER = os.getenv("SERVER")
 print(SERVER)
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
