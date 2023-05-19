@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Login Page </title>
+    <style>
+        #Styling {
+            text-align: center;
+            color: black;
+            height: 50%;
+            width: 60%;
+            padding-top: 9%;
+            padding-bottom: 9%;
+            margin-top: 2%;
+            margin-left: 20%;
+            margin-right: 20%;
+            margin-bottom: 2%;
+            background-color: rgba(238, 15, 3, 0.7);
+            background-size: cover;
+            font-size: 180%;
+        }
+
+        input[type="email"] {
+            width: 50%;
+            margin: 8px 0;
+            align-content: center;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+            box-sizing: border-box;
+            font-size: 17px;
+        }
+
+        .Header {
+            margin-top: 3%;
+            background: #f0f0f0c0;
+            font-size: 160%;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+
+        #submitButton {
+            border-radius: 3px;
+            border: none;
+            background: linear-gradient(to right, #3548ea, #237fdb);
+            box-shadow: 0px 8px 15px rgb(156, 186, 251);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: all 80ms ease-in;
+        }
+
+        #submitButton:hover {
+            cursor: pointer;
+            transform: translateY(-1px) scale(1.01);
+            background: linear-gradient(to right, #1790b5, #2f9ad4);
+            box-shadow: 0px 15px 20px rgba(90, 149, 197, 0.4);
+        }
+
+        #submitButton:active {
+            transform: scale(0.95);
+        }
+        #message{
+            text-align: center;
+            color: red;font-size: large;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="Header">
+        <h2 style="text-align: center;"><b> SCMXPertLite </b></h2>
+        <h3 style="text-align:center"><b>Reset Your Password</b></h3>
+    </div>
+    <div id="Styling">
+        <form action="/Emailcheck/ForForgotpass" method="post">
+            <label for="email">Email Address<span style="color:red">*</span></label><br>
+            <input type="email" id="email" name="email" placeholder="Enter your email" onkeyup="emailcheck()" required><br>
+            <span id="wrem"></span><br>
+            <span id="message">{{detail}}</span><br><br>
+            <button type="submit" id="submitButton" class="submit_btn">Submit</button>
+
+        </form>
+    </div>
+    <script>
+        function emailcheck() {
+            var email = document.getElementById("email");
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (email.value == "") {
+                document.getElementById("wrem").innerHTML = "";
+            }
+            else if (!email.value.match(mailformat)) {
+                document.getElementById('wrem').style.color = 'red';
+                document.getElementById('wrem').innerHTML = '☒ Use valid Email';
+            }
+            else {
+                document.getElementById("wrem").innerHTML = "";
+            }
+        }
+        setTimeout(function () {
+            document.getElementById("message").style.display = "none";
+        }, 5000);
+    </script>
+</body>
+
+</html>

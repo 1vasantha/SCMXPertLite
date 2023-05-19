@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SCMXPertLite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            margin-top: 40%;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #749585, white);
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            position: relative;
+            height: 100vh;
+            background: white;
+        }
+
+        .animated-edge {
+            position: absolute;
+            width: 63.5%;
+            height: 100%;
+            margin-left: 17%;
+        }
+
+        .top-edge:before,
+        .bottom-edge:before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-color: #fff;
+            animation: colorAnimation 5s infinite alternate;
+        }
+
+        .top-edge:before {
+            top: 0;
+        }
+
+        .bottom-edge:before {
+            bottom: 0;
+        }
+
+        @keyframes colorAnimation {
+            0% {
+                background-color: #666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+
+        .login-container {
+            position: absolute;
+            top: 44.6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 575px) {
+            .login-container {
+                margin-top: 35px;
+                max-width: 300px;
+            }
+
+            .login-container h3 {
+                font-size: 18px;
+            }
+
+            .animated-edge {
+                position: absolute;
+                width: 80%;
+                height: 100%;
+                margin-left: 6%;
+            }
+        }
+
+        @media (min-width: 576px) and (max-width: 991px) {
+            .login-container {
+                margin-top: 35px;
+            }
+
+            .login-container h3 {
+                font-size: 22px;
+            }
+
+            .animated-edge {
+                position: absolute;
+                width: 90%;
+                height: 100%;
+                margin-left: 3%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .login-container {
+                margin-top: 35px;
+            }
+        }
+
+        .captcha-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #captcha {
+            margin-right: 10px;
+            background-color:#666666;
+            animation: colorCodes 5s infinite;
+        }
+        @keyframes colorCodes {
+            0% {
+                background-color:#666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+
+        #refresh {
+            background-color: transparent;
+            color: black;
+            border: none;
+            padding: 0;
+        }
+
+        .button-signin {
+            background-color: #666666;
+            animation: colorChange 5s infinite;
+            border: none;
+            color: #f8f9fa;
+        }
+
+        @keyframes colorChange {
+            0% {
+                background-color:#666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+        .button-signin:hover:before {
+            opacity: 1;
+            transform: translate(-30%, -30%);
+        }
+        .button-signin:hover {
+            background-color: rgb(3, 170, 3);
+        }
+
+        label {
+            font-weight: 500;
+        }
+
+        .forgot-password {
+            color: black;
+            text-decoration: none;
+            font-weight: 490;
+        }
+
+        .signup-link {
+            color: black;
+            text-decoration: none;
+            font-weight: 490;
+        }
+
+        .signup-link:hover {
+            text-decoration: none;
+            color: red;
+        }
+
+        .forgot-password:hover {
+            color: red;
+            text-decoration: none;
+        }
+
+        .incorrectCaptcha {
+            color: #FF0000;
+        }
+
+        .correctCaptcha {
+            color: #7FFF00;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-container .btn {
+            flex: 1;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+
+<body onload="createCaptcha()">
+    <div class="container">
+        <div class="animated-edge top-edge"></div>
+        <div class="animated-edge bottom-edge"></div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 login-container">
+                <div class="form-group">
+                    <p class="text-success text-center" id="fade1">{{ message }}</p>
+                </div>
+                <div class="text-center">
+                    <h2><b>SCMXPertLite</b></h2>
+                    <h3><b>Sign in now</b></h3>
+                </div>
+                <form action="/SignIn" method="post">
+                    <div class="form-group">
+                        <label for="email">Email Address<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"
+                            onkeyup="emailcheck()" required>
+                    </div>
+                    <div id="wrem"></div>
+                    <div class="form-group">
+                        <label for="password">Password<span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="captcha">CAPTCHA</label>
+                        <div class="captcha-container">
+                            <div id="captcha"></div>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-dark btn-block button-signin" type="button" id="refresh"
+                                    onclick="createCaptcha()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="captchaTextBox" name="captchaTextBox"
+                                placeholder="Enter the CAPTCHA code" onkeyup="validateCaptcha()" required>
+                        </div>
+                    </div>
+                    <div id="output"></div>
+                    <div class="form-group">
+                        <p class="text-danger text-center" id="fade2">{{ detail }}</p>
+                    </div>
+                    <div class="form-group">
+                        <a href="/Emailcheck/ForForgotpass" class="forgot-password">Forgot Password?(click here to reset
+                            the password)</a>
+                    </div>
+                    <div class="form-group">
+                        <a href="/" class="signup-link">Not signed up yet? Sign Up</a>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <div class="btn-container">
+                                <button type="submit" id="create" class="btn btn-primary btn-block button-signin">Sign
+                                    In</button>
+                                <button type="reset" id="clear" class="btn btn-default btn-block button-signin">Clear
+                                    Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function emailcheck() {
+            var email = document.getElementById("email");
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (email.value == "") {
+                document.getElementById("wrem").innerHTML = "";
+            }
+            else if (!email.value.match(mailformat)) {
+                document.getElementById('wrem').style.color = 'red';
+                document.getElementById('wrem').innerHTML = '☒ Use valid Email';
+            }
+            else {
+                document.getElementById("wrem").innerHTML = "";
+            }
+        }
+        function createCaptcha() {
+            document.getElementById("captchaTextBox").value = "";
+            document.getElementById('output').innerHTML = "";
+            document.getElementById('captcha').innerHTML = "";
+            var charsArray = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!#$%^&*";
+            var captcha = [];
+            for (var i = 0; i < 7; i++) {
+                var index = Math.floor(Math.random() * charsArray.length + 1);
+                if (captcha.indexOf(charsArray[index]) == -1)
+                    captcha.push(charsArray[index]);
+                else i--;
+            }
+            var canv = document.createElement("canvas");
+            canv.id = "captcha";
+            canv.width = 100;
+            canv.height = 35;
+            var ctx = canv.getContext("2d");
+            ctx.font = "15px Arial";
+            ctx.fillStyle = "black";
+            ctx.strokeStyle = "black";
+            ctx.strokeText(captcha.join(""), 18, 30);
+            code = captcha.join("");
+            document.getElementById("captcha").appendChild(canv);
+        }
+        function validateCaptcha() {
+            output = document.getElementById('output')
+            event.preventDefault();
+            if (document.getElementById("captchaTextBox").value == code) {
+                output.classList.add("correctCaptcha");
+                output.innerHTML = "Correct!";
+                document.getElementById('create').disabled = false;
+                document.getElementById('create').style.opacity = (1);
+            }
+            else {
+                output.classList.add("incorrectCaptcha");
+                output.innerHTML = "Incorrect, please try again";
+                document.getElementById('create').disabled = true;
+                document.getElementById('create').style.opacity = (0.4);
+            }
+        }
+        setTimeout(function () {
+            document.getElementById("fade1").style.display = "none";
+            document.getElementById("fade2").style.display = "none";
+        }, 5000);
+    </script>
+</body>
+
+</html>

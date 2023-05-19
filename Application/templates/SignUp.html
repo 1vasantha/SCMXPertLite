@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SCMXPertLite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            margin-top: 40%;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #749585, white);
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            position: relative;
+            height: 100vh;
+            background: white;
+        }
+
+        .animated-edge {
+            position: absolute;
+            width: 63.5%;
+            height: 100%;
+            margin-left: 17%;
+        }
+
+        .top-edge:before,
+        .bottom-edge:before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-color: #fff;
+            animation: colorAnimation 5s infinite alternate;
+        }
+
+        .top-edge:before {
+            top: 0;
+        }
+
+        .bottom-edge:before {
+            bottom: 0;
+        }
+
+        @keyframes colorAnimation {
+            0% {
+                background-color: #666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+
+        .login-container {
+            position: absolute;
+            top: 44.6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 575px) {
+            .login-container {
+                margin-top: 35px;
+                max-width: 300px;
+            }
+
+            .login-container h3 {
+                font-size: 18px;
+            }
+
+            .animated-edge {
+                position: absolute;
+                width: 80%;
+                height: 100%;
+                margin-left: 6%;
+            }
+        }
+
+        @media (min-width: 576px) and (max-width: 991px) {
+            .login-container {
+                margin-top: 35px;
+            }
+
+            .login-container h3 {
+                font-size: 22px;
+            }
+
+            .animated-edge {
+                position: absolute;
+                width: 90%;
+                height: 100%;
+                margin-left: 3%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .login-container {
+                margin-top: 35px;
+            }
+        }
+        .button-signup {
+            background-color: #666666;
+            animation: colorChange 5s infinite;
+            border: none;
+            color: #f8f9fa;
+        }
+
+        @keyframes colorChange {
+            0% {
+                background-color:#666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+        .button-signup:hover:before {
+            opacity: 1;
+            transform: translate(-30%, -30%);
+        }
+
+        .button-signup:hover {
+            background-color: rgb(3, 170, 3);
+        }
+
+
+        label {
+            font-weight: 500;
+        }
+
+        .signin-link {
+            color: black;
+            text-decoration: none;
+            font-weight: 490;
+        }
+
+        .signin-link:hover {
+            text-decoration: none;
+            color: red;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-container .btn {
+            flex: 1;
+            margin: 0 5px;
+        }
+        #message {
+            display: none;
+            padding: 10px;
+            margin-top: 20px;
+            background: #f1f1f1;
+            color: #000;
+        }
+
+        #message p {
+            margin: 5px 0;
+            font-size: 14px;
+            line-height: 1.5em;
+        }
+        .valid {
+            color: green;
+        }
+
+        .valid:before {
+            position: relative;
+            left: -35px;
+            content: "✔";
+        }
+
+        .invalid {
+            color: red;
+        }
+
+        .invalid:before {
+            position: relative;
+            left: -35px;
+            content: "✖";
+        }
+
+    </style>
+</head>
+
+<body onload="createCaptcha()">
+    <div class="container">
+        <div class="animated-edge top-edge"></div>
+        <div class="animated-edge bottom-edge"></div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 login-container">
+                <div class="form-group">
+                    <p class="text-success text-center">{{ message }}</p>
+                </div>
+                <div class="text-center">
+                    <h2><b>SCMXPertLite</b></h2>
+                    <h3><b>Create Account</b></h3>
+                </div>
+                <form action="/" method="post">
+                    <div class="form-group">
+                        <label for="name">What should we call you?<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"
+                            onkeyup="emailcheck()" required>
+                    </div>
+                    <div id="wrem"></div>
+                    <div class="form-group">
+                        <label for="password">Create a new password<span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" 
+                        placeholder="Enter new password" onclick="passcheck()" onkeyup="passcheck2()" onblur="passcheck3()" required>
+                    </div>
+                    <div id="message" class="col-sm-8 col-sm-offset-4">
+                        <h4>Password must contain:</h4>
+                        <p id="letter" class="invalid">A Lowercase letter</p>
+                        <p id="capital" class="invalid">A Uppercase letter</p>
+                        <p id="number" class="invalid">A Number</p>
+                        <p id="length" class="invalid">Minimum 8 characters</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="confpassword">Confirm the new password<span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="confpassword" name="confpassword"
+                            placeholder="Confirm new password" onkeyup="passcheck4()" required>
+                    </div>
+                    <div id="wrps"></div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="Terms_and_Conditions" required>
+                            I have read and I accept the Privacy Policy & Conditions of use <span class="text-danger">*</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <p class="text-danger text-center" id="fade">{{ msg }}</p>
+                    </div>
+                    <div class="form-group">
+                        <a href="/SignIn" class="signin-link">Already have an account? Sign In</a>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <div class="btn-container">
+                                <button type="submit" id="create" class="btn btn-primary btn-block button-signup">Sign Up</button>
+                                <button type="reset" id="clear" class="btn btn-default btn-block button-signup">Clear Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function passcheck() {
+            document.getElementById("message").style.display = "block";
+            document.getElementsByName("confpassword")[0].value="";
+        }
+        function passcheck2() {
+            var pass = document.getElementById("password");
+            var letter = document.getElementById("letter");
+            var capital = document.getElementById("capital");
+            var number = document.getElementById("number");
+            var length = document.getElementById("length");
+            var lowerCaseLetters = /[a-z]/g;
+            if (pass.value.match(lowerCaseLetters)) {
+                letter.classList.remove("invalid");
+                letter.classList.add("valid");
+            } else {
+                letter.classList.remove("valid");
+                letter.classList.add("invalid");
+            }
+            var upperCaseLetters = /[A-Z]/g;
+            if (pass.value.match(upperCaseLetters)) {
+                capital.classList.remove("invalid");
+                capital.classList.add("valid");
+            } else {
+                capital.classList.remove("valid");
+                capital.classList.add("invalid");
+            }
+            var numbers = /[0-9]/g;
+            if (pass.value.match(numbers)) {
+                number.classList.remove("invalid");
+                number.classList.add("valid");
+            } else {
+                number.classList.remove("valid");
+                number.classList.add("invalid");
+            }
+            if (pass.value.length >= 8) {
+                length.classList.remove("invalid");
+                length.classList.add("valid");
+            } else {
+                length.classList.remove("valid");
+                length.classList.add("invalid");
+            }
+
+        }
+        function passcheck3() {
+            document.getElementById("message").style.display = "none";
+        }
+        function emailcheck() {
+            var email = document.getElementById("email");
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (email.value == "") {
+                document.getElementById("wrem").innerHTML = "";
+            }
+            else if (!email.value.match(mailformat)) {
+                document.getElementById('wrem').style.color = 'red';
+                document.getElementById('wrem').innerHTML = '☒ Use valid Email';
+            }
+            else {
+                document.getElementById("wrem").innerHTML = "";
+            }
+        }
+        function passcheck4() {
+            var password = document.getElementById("password").value;
+            var confpassword = document.getElementById("confpassword").value;
+            if (password != confpassword) {
+                document.getElementById('wrps').style.color = 'red';
+                document.getElementById('wrps').innerHTML = '☒ Use same password';
+                document.getElementById('create').disabled = true;
+                document.getElementById('create').style.opacity = (0.4);
+            } else {
+                document.getElementById('wrps').style.color = 'green';
+                document.getElementById('wrps').innerHTML = '🗹 Password Matched';
+                document.getElementById('create').disabled = false;
+                document.getElementById('create').style.opacity = (1);
+            }
+        }
+        setTimeout(function () {
+            document.getElementById("fade").style.display = "none";
+        }, 5000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <title>SCMXPert | Create New Shipment</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-position-x: -400px;
+            background-position-y: -400px;
+            background-repeat: no-repeat;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+
+        #sideNavBarPlaceHolder:hover {
+            width: 225px;
+            transition: all 0.2s ease;
+        }
+
+        .Main {
+            background: rgba(255, 255, 255, 0.55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100vw;
+        }
+
+        .Align {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ForFstSide {
+            color: black;
+            flex: 50%;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+            height: 100%;
+            margin-right: 3%;
+        }
+
+        .ForSecSide {
+            color: black;
+            flex: 50%;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+            height: 100%;
+            margin-left: 3%;
+        }
+
+        input[type=text],
+        input[type=date] {
+            width: 100%;
+            padding: 6px 6px;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-size: 90%;
+        }
+
+        input {
+            font-size: 83%;
+        }
+
+        #GoodType,
+        #Device,
+        #RoutDet,
+        #ShipDes {
+            width: 100%;
+            padding: 6px 6px;
+            display: inline-block;
+            box-sizing: border-box;
+            font-size: 83%;
+        }
+
+        .Heading {
+            background-color: transparent;
+            width: 100vw;
+            height: 35%;
+            position: relative;
+        }
+
+        .Form {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            box-shadow: 0 -8px 10px rgba(0, 0, 0, 0.05),
+                0 8px 10px rgba(0, 0, 0, 0.05);
+            width: 85%;
+            margin-left: 9%;
+            margin-right: 5%;
+            height: 80%;
+            font-size: 150%;
+        }
+
+        #ShipForm {
+            background: transparent;
+            padding: 20px 20px;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            column-gap: 60px;
+            width: 100%;
+
+        }
+
+        #ShipForm input:focus {
+            outline: none;
+            border: 1px solid #3f3f3fc0;
+        }
+
+        #create,
+        #clear {
+            border-radius: 3px;
+            border: none;
+            background: linear-gradient(to right, #3548ea, #237fdb);
+            box-shadow: 0px 8px 15px rgb(156, 186, 251);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: all 80ms ease-in;
+        }
+
+        #create:hover,
+        #clear:hover {
+            cursor: pointer;
+            transform: translateY(-1px) scale(1.01);
+            background: linear-gradient(to right, #1790b5, #2f9ad4);
+            box-shadow: 0px 15px 20px rgba(90, 149, 197, 0.4);
+        }
+
+        #create:active,
+        #clear:active {
+            transform: scale(0.95);
+        }
+
+        #NavBar {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 100%;
+            overflow: hidden;
+            background: rgba(238, 15, 3, 0.7);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: width 0.2s ease;
+            z-index: 5;
+            border: none;
+        }
+
+        #NavBar:hover {
+            width: 225px;
+            transition: all 0.2s ease;
+        }
+
+        .navTop {
+            display: flex;
+            height: 20px;
+            align-items: center;
+            background-color: rgb(91, 14, 214);
+            transition: all 0.2s ease;
+            height: 75px;
+            text-decoration: none;
+            color: white;
+            width: 225px;
+            padding: 14px 18px;
+        }
+
+        .navTop img {
+            width: 50px;
+            position: relative;
+            left: -13px;
+        }
+
+        .navTop span {
+            font-weight: 700;
+            font-size: 20px;
+            position: relative;
+            left: 8px;
+        }
+
+        .Menu {
+            text-decoration: none;
+            position: relative;
+            color: rgb(0, 0, 0);
+            display: table;
+            width: 225px;
+            padding: 14px 18px;
+            transition: all 0.1s ease;
+        }
+
+        .Menu:hover {
+            background-color: white;
+            transform: scale(1.05);
+            box-shadow: 0 2px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 -2px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .Menu.activeMenu {
+            background-color: rgb(6, 179, 92);
+            transform: translateX(7px) scale(1.1);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .Menu .Menus {
+            position: relative;
+            font-weight: 400;
+            top: -4px;
+            font-size: 15px;
+            margin-left: 20px;
+        }
+
+        #logOutMenu {
+            position: absolute;
+            bottom: 0px;
+            background-color: rgb(66, 209, 214);
+            box-shadow: 0px 15px 20px rgb(253, 159, 159)
+        }
+
+        #logOutMenu:hover {
+            background-color: white;
+            transform: scale(1.05);
+            box-shadow: 0 2px 35px rgba(58, 86, 88, 0.3);
+            box-shadow: 0 -2px 35px rgba(224, 198, 159, 0.3);
+        }
+        #fade {
+            animation: hideAnimation 0s ease-in 5s;
+            animation-fill-mode: forwards;
+        }
+        @keyframes hideAnimation {
+            to {
+                visibility: hidden;
+                width: 0;
+                height: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav id="NavBar">
+            <a href="/Dashboard" class="navTop"><span>Exafluence</span></a><br>
+            <a href="/Dashboard" class="Menu"><i style="font-size:25px;" class="bi bi-layout-wtf"></i><span
+                    class="Menus">Dashboard</span></a><br>
+            <a href="/MyAccount" class="Menu"><i style="font-size:25px;" class="bi bi-person-circle"></i><span
+                    class="Menus">My Account</span></a><br>
+            <a href="/MyShipment" class="Menu"><i style="font-size:25px;" class="bi bi-file-earmark-text"></i><span
+                    class="Menus">My Shipment</span></a><br>
+            <a href="/Shipment" class="Menu"><i style="font-size:25px;" class="bi bi-truck"></i><span class="Menus">New
+                    Shipment</span></a><br>
+            {% if "write" in request.session.get("permissions", []) %}
+            <a href="/DeviceData" class="Menu"><i style="font-size:25px;" class="bi bi-hdd"></i><span
+                                class="Menus">Device Data</span></a><br>
+            {% endif %}
+            <a href="/logout" id="logOutMenu" class="Menu"><i style="font-size:25px;"
+                    class="bi bi-box-arrow-right"></i><span class="Menus">Log out</span></a>
+            </ul>
+        </nav>
+    </header>
+    <div class="Main">
+        <div class="Heading">
+            <h1 style="text-align: center;">Create New Shipment </h1>
+            <h2 id="fade" style="text-align: center;color: green;font-size: medium; justify-content: center;">{{detail}}</h2>
+        </div>
+        <div class="Form">
+            <form id="ShipForm" action="/Shipment" method="post">
+                <div class="Align">
+                    <div class="ForFstSide">
+                        <label for="ShipNum">Shipment Number<span style="color: red;">*</span></label><br>
+                        <input type="text" id="ShipNum" name="ShipNum" placeholder="Enter Shipment Number"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"
+                            required><br><br>
+                        <label for="routeDetails">Route Details<span style="color: red;">*</span></label><br>
+                        <select id="RoutDet" name="RoutDet" required>
+                            <option disabled selected value>Select the Route</option>
+                            <option>USA - New York City, New York</option>
+                            <option>USA - Los Angeles, California</option>
+                            <option>USA - Chicago, Illinois</option>
+                            <option>USA - Houston, Texas</option>
+                            <option>USA - Phoenix, Arizona</option>
+                            <option>USA - Philadelphia, Pennsylvania</option>
+                        </select><br><br>
+                        <label for="Device">Device<span style="color: red;">*</span></label><br>
+                        <select id="Device" name="Device" required>
+                            <option disabled selected value>Select the Device</option>
+                            <option>4587352479</option>
+                            <option>4587434500</option>
+                            <option>4582399345</option>
+                            <option>4775432378</option>
+                            <option>3445678332</option>
+                            <option>3423778950</option>
+                            <option>3357688109</option>
+                            <option>3890564567</option>
+                        </select><br><br>
+                        <label for="PoNum">PO Number<span style="color: red;">*</span></label><br>
+                        <input type="text" id="PoNum" name="PoNum" placeholder="Enter PO Number" required
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                        <label for="NdcNum">NDC Number<span style="color: red;">*</span></label><br>
+                        <input type="text" placeholder="Enter NDC Number" required id="NdcNum" name="NdcNum"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                        <label for="SeNumOfGoods">Serial number of Goods<span style="color: red;">*</span></label><br>
+                        <input type="text" placeholder=" Enter the Serial number of Goods" required id="SeNumOfGoods"
+                            name="SeNumOfGoods"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                    </div>
+                    <div class="ForSecSide">
+                        <label for="ContNum">Container Number<span style="color: red;">*</span></label><br>
+                        <input type="text" placeholder="Enter the Container Number" required id="ContNum" name="ContNum"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                        <label for="GoodType">Goods Type<span style="color: red;">*</span></label><br>
+                        <select id="GoodType" name="GoodType" required>
+                            <option disabled selected value>Select the Good Type</option> disabled selected value>Select
+                            Goods</option>
+                            <option value="E-Commerce">E-Commerce</option>
+                            <option value="Pharmaceutical">Pharmaceutical</option>
+                            <option value="Textiles">Textiles</option>
+                            <option value="Edibles">Edibles</option>
+                            <option value="Electronics">Electronics</option>
+                        </select><br><br>
+                        <label for="ExpDelDate">Expected Delivery Date<span style="color: red;">*</span></label><br>
+                        <input type="date" required id="ExpDelDate" name="ExpDelDate" oninput="TDate()"><br><br>
+                        <label for="DelNum">Delivery Number<span style="color: red;">*</span></label><br>
+                        <input type="text" placeholder="Enter the Delivery Number" required id="DelNum" name="DelNum"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                        <label for="BatchId">Batch Id<span style="color: red;">*</span></label><br>
+                        <input type="text" placeholder=" Enter the Batch Id" required id="BatchId" name="BatchId"
+                            title="The number should matche a number between 0-9 that can be upto 10 digits"><br><br>
+                        <label for="ShipDes">Shipment Description<span style="color: red;">*</span></label><br>
+                        <textarea placeholder="Enter Shipment Description" required id="ShipDes" name="ShipDes"
+                            cols="23" rows="2" pattern="/^[A-Za-z0-9 ,.'-:;['\x22]+@#%&*(){}?]{2,200}$/"></textarea><br>
+                    </div>
+                </div>
+                <div>
+                    <button id="create" type="submit">Create Shipment</button>
+                    <button id="clear" type="reset">Clear Details</button>
+                </div>
+            </form>
+        </div>
+        <span id="ErrMsg"></span>
+    </div>
+    <script>
+        const links = document.getElementByIdAll("Menu");
+        if (links.length > 0) {
+            links.forEach((link) => {
+                if (link.dataset.path === location.pathname) {
+                    link.classList.add('activenavMenu')
+                }
+            });
+        }
+        function TDate() {
+            var UserDate = document.getElementById("ExpDelDate").value;
+            var ToDate = new Date();
+            if (new Date(UserDate).getTime() < ToDate.getTime()) {
+                UserDate.disabled = true;
+                document.getElementById("ExpDelDate").innerHTML = "";
+                alert("The Date must be Bigger than today date");
+            }
+            else {
+                UserDate.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

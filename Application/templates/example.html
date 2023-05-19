@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Shipments</title>
+    <!-- Include your CSS and JS files -->
+    <style>
+        .container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .content {
+            width: 75%;
+            padding: 0 20px;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .content p {
+            margin: 0;
+        }
+
+        .image {
+            width: 25%;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .typing-effect {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3s steps(40, end), deleting 3s steps(40, end) 6s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes typing {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes deleting {
+            0% { width: 100%; }
+            100% { width: 0; }
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function() {
+            setInterval(changeContent, 5000); // Change content after 5 seconds
+        });
+
+        function changeContent() {
+            var contentElement = document.getElementById('content');
+            var imageElement = document.getElementById('image');
+
+            var text1 = `
+            <div class="typing-effect">
+                    <p>With our intuitive interface, you can easily create new shipments, update existing ones, and monitor the status of each shipment.</p>
+                    <p>Take advantage of our powerful features to streamline your shipping process and ensure timely deliveries.</p>
+                    <p>Get started today and experience the convenience and efficiency of our shipment management system.</p>
+                </div>
+                
+            `;
+
+            var text2 = `
+            <div class="typing-effect">
+                    <p>Welcome to the Shipments Dashboard. Here, you can create and manage your shipments efficiently.</p>
+                    <p>Stay organized and keep track of all your shipping activities in one place.</p>
+                </div>
+            `;
+
+            if (contentElement.innerHTML === text1) {
+                contentElement.innerHTML = text2;
+                imageElement.innerHTML = `
+                <img src="first-image.jpg" alt="First Image">
+                `;
+            } else {
+                contentElement.innerHTML = text1;
+                imageElement.innerHTML = `
+                <img src="second-image.jpg" alt="Second Image">
+                `;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="content" id="content">
+            <h1>Dashboard - Shipments</h1>
+            <div class="typing-effect">
+                <p>Welcome to the Shipments Dashboard. Here, you can create and manage your shipments efficiently.</p>
+                <p>Stay organized and keep track of all your shipping activities in one place.</p>
+            </div>
+        </div>
+
+        <div class="image" id="image">
+            <img src="first-image.jpg" alt="First Image">
+        </div>
+    </div>
+</body>
+</html>

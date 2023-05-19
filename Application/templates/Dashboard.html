@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SCMXPertLite</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>
+        .navbar {
+            background-color:#2b5a4b;
+            animation: colorAnimation 5s infinite alternate;
+        }
+        @keyframes colorAnimation {
+            0% {
+                background-color: #666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+
+        .navbar-toggler {
+            border-color: #ffffff;
+        }
+        .navbar-toggler i {
+            color: #ffffff;
+        }
+        .navbar-nav.custom-spacing {
+            justify-content: flex-start;
+            margin-left: 0;
+        }
+        .navbar-nav.custom-spacing .nav-link {
+            margin-right: 100px;
+            color: #ffffff;
+        }
+        .navbar-nav.custom-spacing .nav-link:hover {
+            color: red !important;
+        }
+        .navbar-nav.custom-spacing .active {
+            font-weight: bold;
+        }
+        .collapse{
+            background-color:#749585 ;
+        }
+        .container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .content {
+            width: 80%;
+            padding: 0 20px;
+            text-align: left;
+            overflow: hidden;
+            margin-top: 20%;
+        }
+
+        .content p {
+            margin: 0;
+        }
+
+        .image {
+            width: 90%;
+            text-align: left;
+            overflow: hidden;
+            margin-top: 4%;
+            margin-left: 10%;
+        }
+
+        .image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .typing-effect {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2s steps(40, end), deleting 2s steps(40, end) 6s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes typing {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes deleting {
+            0% { width: 100%; }
+            100% { width: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse" id="navbarToggleExternalContent">
+                <div class="bd-color p-4">
+                    <ul class="navbar-nav d-flex flex-row-reverse align-items-center custom-spacing">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/logout">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </li>
+                        {% if "write" in request.session.get("permissions", []) %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/DeviceData">
+                                <i class="fas fa-database me-1"></i>Device Data
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/Shipment">
+                                <i class="fas fa-box me-1"></i>Shipments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/MyShipment">
+                                <i class="fas fa-shipping-fast me-1"></i>My Shipments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/MyAccount">
+                                <i class="fas fa-user-circle me-1"></i>My Account
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/Dashboard">
+                                <i class="fas fa-chart-bar me-1"></i>Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="content" id="content">
+            <div class="typing-effect">
+                <p>Welcome to the Shipments Dashboard. </p>
+                <p>Here, you can create and manage your shipments efficiently.</p>
+                <p>Stay organized and keep track of all your shipping activities in one place.</p>
+            </div>
+        </div>
+
+        <div class="image" id="image">
+            <img src="/static/shippingimg.avif" alt="First Image">
+        </div>
+    </div>
+    <script>
+        const navbar = document.querySelector('.navbar');
+        const toggleButton = navbar.querySelector('.navbar-toggler');
+        const collapse = navbar.querySelector('.collapse');
+        navbar.addEventListener('mouseover', function () {
+            if (!navbar.classList.contains('expanded')) {
+                collapse.style.display = 'block';
+            }
+        });
+        navbar.addEventListener('mouseout', function () {
+            if (!navbar.classList.contains('expanded')) {
+                collapse.style.display = 'none';
+            }
+        });
+        toggleButton.addEventListener('click', function () {
+            navbar.classList.toggle('expanded');
+            if (navbar.classList.contains('expanded')) {
+                collapse.style.display = 'block';
+            } else {
+                collapse.style.display = 'none';
+            }
+        });
+        window.addEventListener('load', function() {
+            setInterval(changeContent, 10000); // Change content after 5 seconds
+        });
+
+        function changeContent() {
+            var contentElement = document.getElementById('content');
+            var imageElement = document.getElementById('image');
+
+            var text1 = `
+            <div class="typing-effect">
+                    <p>With our intuitive interface, you can easily create new shipments,</p>
+                    <p>update existing ones, and monitor the status of each shipment.</p>
+                    <p>Take Benefit of our features to streamline your shipping process.</p>
+                    <p>Get started today and experience the convenience and </p>
+                    <p>efficiency of our shipment management system.</p>
+                </div>
+                
+            `;
+
+            var text2 = `
+            <div class="typing-effect">
+                    <p>Welcome to the Shipments Dashboard.</p>
+                    <p>Here, you can create and manage your shipments efficiently.</p>
+                    <p>Stay organized and keep track of all your shipping activities in one place.</p>
+                </div>
+            `;
+
+            if (contentElement.innerHTML === text1) {
+                contentElement.innerHTML = text2;
+                imageElement.innerHTML = `
+                <img src="/static/shippingimg.avif" alt="First Image">
+                `;
+            } else {
+                contentElement.innerHTML = text1;
+                imageElement.innerHTML = `
+                <img src="/static/shippingimg2.jpg" alt="Second Image" style="width:80% !important;">
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

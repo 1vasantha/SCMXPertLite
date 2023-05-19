@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Login Page </title>
+    <style>
+        #Styling {
+            color: black;
+            height: 40%;
+            width: 57%;
+            padding-top: 2%;
+            padding-bottom: 2%;
+            padding-left: 3%;
+            margin-top: 1%;
+            margin-left: 20%;
+            margin-right: 30%;
+            margin-bottom: 1%;
+            background-color: rgba(238, 15, 3, 0.7);
+            background-size: cover;
+            font-size: 140%;
+        }
+
+        input[type="email"] {
+            width: 50%;
+            margin: 6px 0;
+            align-items: center;
+            text-align: center;
+            padding: 8px 20px;
+            display: inline-block;
+            box-sizing: border-box;
+            font-size: 17px;
+            margin-top: 0%;
+        }
+
+        .Header {
+            margin-top: 0.5%;
+            background: #f0f0f0c0;
+            font-size: 160%;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+
+        #submitButton {
+            border-radius: 3px;
+            border: none;
+            background: linear-gradient(to right, #3548ea, #237fdb);
+            box-shadow: 0px 8px 15px rgb(156, 186, 251);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: all 80ms ease-in;
+        }
+
+        #submitButton:hover {
+            cursor: pointer;
+            transform: translateY(-1px) scale(1.01);
+            background: linear-gradient(to right, #1790b5, #2f9ad4);
+            box-shadow: 0px 15px 20px rgba(90, 149, 197, 0.4);
+        }
+
+        #submitButton:active {
+            transform: scale(0.95);
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        input[type=text],
+        input[type=password] {
+            width: 90%;
+            padding: 9px 20px;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+        
+        #detail{
+            text-align: center;
+            color: red;
+            font-size: large;
+            justify-content: center;
+        }
+        #message1{
+            text-align: center;
+            color: green;
+            font-size: large;
+            justify-content: center;
+        }
+        
+
+        #message {
+            justify-content: center;
+            align-items: center;
+            display: none;
+            background: #f1f1f1;
+            color: #000;
+            position: absolute;
+            padding: 10px;
+            margin-top: 20px;
+            margin-left: 82%;
+        }
+
+        #message p {
+            padding: 10px 10px;
+            font-size: 15px;
+        }
+        
+
+        .valid {
+            color: green;
+        }
+
+        .valid:before {
+            position: relative;
+            left: -35px;
+            content: "✔";
+        }
+
+        .invalid {
+            color: red;
+        }
+
+        .invalid:before {
+            position: relative;
+            left: -35px;
+            content: "✖";
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="Header">
+        <h2 style="text-align: center;"><b> SCMXPertLite </b></h2>
+        <h3 style="text-align:center"><b>Reset Your Password</b></h3>
+    </div>
+    <div id="message">
+        <h4>Password must contain:</h4>
+        <p id="letter" class="invalid">A Lowercase letter</p>
+        <p id="capital" class="invalid">A Uppercase letter</p>
+        <p id="number" class="invalid">A Number</p>
+        <p id="length" class="invalid">Minimum 8 characters</p>
+    </div>
+    <div id="Styling">
+        <form action="/forgotpass" method="post">
+            <span id="message1">{{message}}</span><br><br>
+            <input type="email" id="email" name="email" value="{{ email }}" style="align-items: center;" readonly><br><br>
+            <label for="password">New Password<span style="color:red">*</span></label><br>
+            <input type="password" id="password" name="password" placeholder="Enter the new password" onclick="passcheck()" onkeyup="passcheck2()" onblur="passcheck3()" required><br><br>
+            <label for="confpassword">Confirm New Password<span style="color:red">*</span></label><br>
+            <input type="password" id="confpassword" name="cnfpassword" placeholder="Enter the new password" onkeyup="passcheck4()" required><br>
+            <span id="wrps"></span><br>
+            <label for="otp">Enter the otp you received to your mail<span style="color:red">*</span></label><br>
+            <input type="text" id="otp" name="otp" placeholder="Enter the otp" required><br><br>
+            <span id="detail">{{detail}}</span><br>
+            <button type="submit" id="submitButton" class="submit_btn">Reset</a></button>
+        </form>
+    </div>
+    <script>
+        function passcheck4() {
+            var password = document.getElementById("password").value;
+            var confpassword = document.getElementById("confpassword").value;
+            if (password != confpassword) {
+                document.getElementById('wrps').style.color = 'red';
+                document.getElementById('wrps').innerHTML = '☒ Use same password';
+                document.getElementById('submitButton').disabled = true;
+                document.getElementById('submitButton').style.opacity = (0.4);
+            } else {
+                document.getElementById('wrps').style.color = 'green';
+                document.getElementById('wrps').innerHTML = '🗹 Password Matched';
+                document.getElementById('submitButton').disabled = false;
+                document.getElementById('submitButton').style.opacity = (1);
+            }
+        }
+        function passcheck() {
+            document.getElementById("message").style.display = "block";
+        }
+        function passcheck2() {
+            var pass = document.getElementById("password");
+            var letter = document.getElementById("letter");
+            var capital = document.getElementById("capital");
+            var number = document.getElementById("number");
+            var length = document.getElementById("length");
+            var lowerCaseLetters = /[a-z]/g;
+            if (pass.value.match(lowerCaseLetters)) {
+                letter.classList.remove("invalid");
+                letter.classList.add("valid");
+            } else {
+                letter.classList.remove("valid");
+                letter.classList.add("invalid");
+            }
+            var upperCaseLetters = /[A-Z]/g;
+            if (pass.value.match(upperCaseLetters)) {
+                capital.classList.remove("invalid");
+                capital.classList.add("valid");
+            } else {
+                capital.classList.remove("valid");
+                capital.classList.add("invalid");
+            }
+            var numbers = /[0-9]/g;
+            if (pass.value.match(numbers)) {
+                number.classList.remove("invalid");
+                number.classList.add("valid");
+            } else {
+                number.classList.remove("valid");
+                number.classList.add("invalid");
+            }
+            if (pass.value.length >= 8) {
+                length.classList.remove("invalid");
+                length.classList.add("valid");
+            } else {
+                length.classList.remove("valid");
+                length.classList.add("invalid");
+            }
+
+        }
+        function passcheck3() {
+            document.getElementById("message").style.display = "none";
+        }
+        setTimeout(function () {
+            document.getElementById("detail").style.display = "none";
+            document.getElementById("message1").style.display = "none";
+        }, 5000);
+    </script>
+
+</body>
+
+</html>
