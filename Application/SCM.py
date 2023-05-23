@@ -1,21 +1,34 @@
 # packages
-from fastapi import Request, Form,FastAPI,Response,BackgroundTasks
+from fastapi import Request, Form,FastAPI,Response,HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from passlib.context import CryptContext
 from email.message import EmailMessage
-import smtplib
 import random
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #Database and its collections 
 import pymongo
-client = pymongo.MongoClient("mongodb+srv://LebakuVasantha:Vasantha123@scmcluster.b0fcmnz.mongodb.net/SCM?retryWrites=true&w=majority")
-signUp = client["SCM"]["signUp"]
-shipments = client["SCM"]["shipments"]
-deviceData = client["SCM"]["deviceData"]
+from pymongo.errors import ConnectionFailure 
+mongouri=os.getenv("mongouri")
+try:
+    client = pymongo.MongoClient(mongouri)
+except ConnectionFailure as e:#Handle the Connection Error
+    error_msg = f"Error connecting to the database: {e}"
+    print(error_msg)
+    raise HTTPException(status_code=500, detail=error_msg)
+database=os.getenv("database")
+collection1=os.getenv("collection1")
+collection2=os.getenv("collection2")
+collection3=os.getenv("collection3")
+signUp = client[database][collection1]
+shipments = client[database][collection2]
+deviceData = client[database][collection3]
 
 #Models Designing
 from pydantic import BaseModel
@@ -49,6 +62,13 @@ class Shipment(BaseModel):
 # Global Variables
 mainOtp=0
 mainOtp2=0
+session_storage = {}
+
+#mail and password for mail sending
+import smtplib
+from smtplib import SMTPException
+senderemail=os.getenv("senderemail")
+senderpassword=os.getenv("senderpassword")
 
 #for password encryption
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -59,7 +79,8 @@ templates = Jinja2Templates(directory="templates")
 # Our Main Application with fastapi
 app=FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="vasantha")
+secret_key=os.getenv("secret_key")
+app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
@@ -85,7 +106,6 @@ def create(request:Request,response: Response, name:str =Form(...), email:str =F
     if user:
         return templates.TemplateResponse("SignUp.html",{"request":request,"msg":"Email is already exist"})
     else:
-        request.session.clear()
         global mainOtp2
         hashs_password = pwd_context.hash(password)
         otp = str(random.randint(1000, 9999))
@@ -93,14 +113,17 @@ def create(request:Request,response: Response, name:str =Form(...), email:str =F
         msg = EmailMessage()
         msg.set_content(f"Your OTP is: {otp}")
         msg['Subject'] = 'Registering- OTP for SCMXPertLite'
-        msg['From'] = 'vasantha.scm2023@gmail.com'
+        msg['From'] = senderemail
         msg['To'] = email
-        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-            smtp.starttls()
-            smtp.login('vasantha.scm2023@gmail.com', 'qrdmneoangbqaogb')
-            smtp.send_message(msg)
-            return templates.TemplateResponse("SignUpOtp.html",{"request":request,"usname":name,"usemail":email,"uspassword":hashs_password})
-        
+        try:
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.starttls()
+                smtp.login(senderemail, senderpassword)
+                smtp.send_message(msg)
+                return templates.TemplateResponse("SignUpOtp.html",{"request":request,"usname":name,"usemail":email,"uspassword":hashs_password})
+        except SMTPException as e:# Handle the SMTP exception
+            error_msg = f"Error sending email: {e}"
+            raise HTTPException(status_code=500, detail=error_msg)
 
 #Get for SignIn page
 @app.get("/SignIn",response_class=HTMLResponse)
@@ -115,8 +138,12 @@ def login(request:Request, email:str=Form(...),password:str=Form(...)):
     if not user:
         return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"This Email id not Existed. Use your registered Email or create one."})
     else:
-        passw=user['password']
-        permissions=user['permissions']
+        try:
+            passw=user['password']
+            permissions=user['permissions']
+        except KeyError as e:
+            error_msg = "Password key not found in user dictionary"
+            raise HTTPException(status_code=500, detail=error_msg) from e
         if pwd_context.verify(password,passw):
             request.session["name"] = user["name"]
             request.session["email"]= user["email"]
@@ -141,9 +168,9 @@ def home(request:Request):
     if  not is_authenticated or not email:
         return templates.TemplateResponse("SignIn.html", {"request": request,"detail":"You are not authorized.Please login and get authorized"})
     if "maintain" in permissions:
-        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "superior","Greet":" You have all your  superior Procurity"})
+        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "superior","Greet":" , You have all your  superior Procurity"})
     elif "write" in permissions:
-        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "admin","Greet":" You can have all your admin Ownership"})
+        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "admin","Greet":", You can have all your admin Ownership"})
     else:
         return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"Greet":""})
     
@@ -188,18 +215,26 @@ def account(request: Request):
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
-        for user in users:
-            if "maintain" not in user["permissions"]:
-                data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"})
+        try:
+            for user in users:
+                if "maintain" not in user["permissions"]:
+                    data.append((user["name"], user["email"], user["permissions"]))
+            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"}) 
+        except KeyError as e:
+            error_msg = "Password key not found in user dictionary"
+            raise HTTPException(status_code=500, detail=error_msg) from e
     elif "write" in permissions:
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
-        for user in users:
-            if "write" not in user["permissions"]:
-                data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
+        try:
+            for user in users:
+                if "write" not in user["permissions"]:
+                    data.append((user["name"], user["email"], user["permissions"]))
+            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
+        except KeyError as e:
+            error_msg = "Password key not found in user dictionary"
+            raise HTTPException(status_code=500, detail=error_msg) from e
     else:
         return templates.TemplateResponse("MyAccount.html", {"request": request, "name": name, "email": email})
 
@@ -281,13 +316,17 @@ async def EmailCheck(request: Request, email: str = Form(...)):
         msg = EmailMessage()
         msg.set_content(f"Your OTP is: {otp}")
         msg['Subject'] = 'Forgot Password - OTP for SCMXPertLite'
-        msg['From'] = 'vasantha.scm2023@gmail.com'
+        msg['From'] = senderemail
         msg['To'] = email
-        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-            smtp.starttls()
-            smtp.login('vasantha.scm2023@gmail.com', 'qrdmneoangbqaogb')
-            smtp.send_message(msg)
-        return templates.TemplateResponse("ForgotPass.html", {"request": request, "message": "Otp has been sent to your mail. Please check and enter", "email": email})
+        try:
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.starttls()
+                smtp.login(senderemail, senderpassword)
+                smtp.send_message(msg)
+            return templates.TemplateResponse("ForgotPass.html", {"request": request, "message": "Otp has been sent to your mail. Please check and enter", "email": email})
+        except SMTPException as e:# Handle the SMTP exception
+            error_msg = f"Error sending email: {e}"
+            raise HTTPException(status_code=500, detail=error_msg)
     else:
         return templates.TemplateResponse("EmailCheck.html", {"request": request, "detail": "No such email. Please enter your registered email"})
 
@@ -305,8 +344,45 @@ def PasswordSetUp(request: Request, email: str = Form(...), otp: str = Form(...)
         return templates.TemplateResponse("ForgotPass.html", {"request": request, "detail": "No such email. Please enter your registered email"})
     if mainOtp != otp:
         return templates.TemplateResponse("ForgotPass.html", {"request": request, "detail": "You have entered the wrong OTP", "email": email})
-    signUp.update_one({"email": email}, {"$set": {"password": pwd_context.hash(password)}})
+    hashs_password = pwd_context.hash(password)
+    signUp.update_one({"email": email}, {"$set": {"password":hashs_password}})
     return templates.TemplateResponse("SignIn.html", {"request": request, "message": "Password updated successfully"})
+
+@app.get("/my-form",response_class=HTMLResponse,name="Operations")
+def my_form(request:Request):
+    is_authenticated = request.session.get("is_authenticated")
+    email = request.session.get("email")
+    name = request.session.get("name")
+    permissions = request.session.get("permissions")
+    if not is_authenticated or not email:
+        return templates.TemplateResponse("SignIn.html", {"request": request, "detail": "You are not authorized. Please login and get authorized"})
+    if "maintain" in permissions:
+        headings = ("Username", "Registered Email", "Permissions")
+        users = signUp.find()
+        data = []
+        try:
+            for user in users:
+                if "maintain" not in user["permissions"]:
+                    data.append((user["name"], user["email"], user["permissions"]))
+            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"}) 
+        except KeyError as e:
+            error_msg = "Password key not found in user dictionary"
+            raise HTTPException(status_code=500, detail=error_msg) from e
+    elif "write" in permissions:
+        headings = ("Username", "Registered Email", "Permissions")
+        users = signUp.find()
+        data = []
+        try:
+            for user in users:
+                if "write" not in user["permissions"]:
+                    data.append((user["name"], user["email"], user["permissions"]))
+            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
+        except KeyError as e:
+            error_msg = "Password key not found in user dictionary"
+            raise HTTPException(status_code=500, detail=error_msg) from e
+    else:
+        return templates.TemplateResponse("MyAccount.html", {"request": request, "name": name, "email": email})
+
 
 @app.post("/my-form",response_class=HTMLResponse, name="Operations")
 def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
@@ -321,7 +397,7 @@ def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
             color = "green"
         else:
             color = "red"
-            message = "Failed to make user an admin"
+            message = "This user is already an admin"
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
@@ -337,7 +413,7 @@ def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
             color = "green"
         else:
             color = "red"
-            message = "Failed to make admin an user"
+            message = "This is already an user"
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
@@ -360,7 +436,7 @@ def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
             elif "write" in uspermissions:
                 if "write" not in user["permissions"]:
                     data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": usname, "email": usemail, "users": "users", "user_type": "admin","color":color})
+        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": usname, "email": usemail, "users": "users", "user_type": "admin","color":color,"message":message})
     else:
         return templates.TemplateResponse("MyAccount.html", {"request": request,"message": "Invalid action."})
 

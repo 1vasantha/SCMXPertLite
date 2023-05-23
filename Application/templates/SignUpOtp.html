@@ -1,180 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>SCMXPertLite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login Page</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Custom styles specific to your page */
-        /* ... */
-        body {
-            background-color: #f8f9fa;
-        }
-        .form-container {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 50px;
-            margin-bottom: 120px;
-        }
-        .form-container .header {
-            margin-bottom: 30px;
-        }
-        .form-container .header h2 {
-            color: #333333;
-            font-size: 24px;
-        }
-        .form-container .header h3 {
-            color: #666666;
-            font-size: 18px;
-            font-weight: 400;
-        }
-        .form-container form {
-            margin-top: 30px;
-        }
-        .form-container .form-label {
-            font-weight: 500;
-            color: #555555;
-        }
-        .form-container .form-control {
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-        }
-        .form-container .form-control:focus {
-            border-color: #80bdff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-        .form-container .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        #Styling {
+            color: black;
+            height: 40%;
+            width: 45%;
+            padding-top: 9%;
+            padding-bottom: 9%;
+            margin-top: 2%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2%;
+            background-color: #749585;
+            background-size: cover;
+            font-size: 120%;
             font-weight: 500;
         }
-        .form-container .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
+        input[type="text"] {
+            width: 100%;
+            margin: 8px 0;
+            align-content: center;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+            box-sizing: border-box;
+            font-size: 17px;
         }
-        .image-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100px; /* Adjust the height as needed */
-            width: 100px; /* Adjust the width as needed */
-            margin-top: 20px;
-            margin-left: 20px;
+        .Header {
+            margin-top: 3%;
+            background: #666666;
+            animation: colorChange 5s infinite;
+            font-size: 160%;
+            margin-left: auto;
+            margin-right: auto;
+            width: 45%;
+            color: black;
         }
-        .image-right {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            height: 100px; /* Adjust the height as needed */
-            width: 100px; /* Adjust the width as needed */
-            margin-bottom: 20px;
-            margin-right: 20px;
+        
+        .button-signup {
+            background-color: #666666;
+            animation: colorChange 5s infinite;
+            border: none;
+            color: #f8f9fa;
+        }
+
+        @keyframes colorChange {
+            0% {
+                background-color:#666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+        .button-signup:hover:before {
+            opacity: 1;
+            transform: translate(-30%, -30%);
+        }
+
+        .button-signup:hover {
+            background-color: rgb(3, 170, 3);
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 45%;
+            margin-right:0%;
+        }
+
+        .btn-container .btn {
+            flex: 1;
+            margin: 0 20px;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        #detail {
+            text-align: center;
+            font-size: large;
         }
     </style>
-    
 </head>
 <body>
-    <div class="container">
-        <div class="animated-edge top-edge"></div>
-        <div class="animated-edge bottom-edge"></div>
-        <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 login-container">
-                <img src="/static/forgotpasswordimg2.png" alt="Left Image" class="image-left">
-                <div class="form-group">
-                    <p class="text-success text-center" id="fade1">{{ message }}</p>
-                </div>
-                <div class="text-center">
-                    <h2><b>SCMXPertLite</b></h2>
-                    <h3><b>Sign in now</b></h3>
-                </div>
-                <form action="/SignIn" method="post">
-                    <div class="form-group">
-                        <label for="email">Email Address<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email"
-                            onkeyup="emailcheck()" required>
-                    </div>
-                    <div id="wrem"></div>
-                    <div class="form-group">
-                        <label for="password">Password<span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="password" name="password"
-                            placeholder="Enter your password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="captcha">CAPTCHA</label>
-                        <div class="captcha-container">
-                            <div id="captcha"></div>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-dark btn-block button-signin" type="button" id="refresh"
-                                    onclick="createCaptcha()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="captchaTextBox" name="captchaTextBox"
-                                placeholder="Enter the CAPTCHA code" onkeyup="validateCaptcha()" required>
-                        </div>
-                    </div>
-                    <div id="output"></div>
-                    <div class="form-group">
-                        <p class="text-danger text-center" id="fade2">{{ detail }}</p>
-                    </div>
-                    <div class="form-group">
-                        <a href="/Emailcheck/ForForgotpass" class="forgot-password">Forgot Password?(click here to reset
-                            the password)</a>
-                    </div>
-                    <div class="form-group">
-                        <a href="/" class="signup-link">Not signed up yet? Sign Up</a>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-4 col-sm-8">
-                            <div class="btn-container">
-                                <button type="submit" id="create" class="btn btn-primary btn-block button-signin">Sign
-                                    In</button>
-                                <button type="reset" id="clear" class="btn btn-default btn-block button-signin">Clear
-                                    Details</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <img src="/static/forgotpasswordimg.jpg" alt="Right Image" class="image-right">
-            </div>
-        </div>
+    <div class="Header">
+        <h2 class="text-center"><b>SCMXPertLite</b></h2>
+        <h3 class="text-center"><b>Enter OTP to Successfully Sign Up</b></h3>
     </div>
-    <div class="container">
-        <div class="form-container">
-            <img src="/static/forgotpasswordimg2.png" alt="Left Image" class="image-left">
-            <div class="header text-center">
-                <h2><b>SCMXPertLite</b></h2>
-                <h3>Enter OTP to Successfully Sign Up</h3>
-            </div>
-            <form action="/SignUpOtp" method="post">
-                <input type="hidden" id="usname" name="usname" value="{{ usname }}">
-                    <input type="hidden" id="usemail" name="usemail" value="{{ usemail }}">
-                    <input type="hidden" id="uspassword" name="uspassword" value="{{ uspassword }}">
-                   
-                <div class="mb-3">
-                    <label for="otp" class="form-label">Enter the OTP you received to your mail<span style="color:red">*</span></label>
-                    <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter the OTP" required>
-                </div>
-                <span id="detail" class="text-center text-danger">{{detail}}</span><br>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-            <img src="/static/forgotpasswordimg.jpg" alt="Right Image" class="image-right">
-        </div>
+    <div class="container text-center">
+        <img src="/static/otp.jpg" alt="Your Image" class="img-fluid">
     </div>
-
-    <!-- Bootstrap JavaScript and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="Styling" class="container">
+        <form action="/SignUpOtp" method="post">
+            <input type="hidden" id="usname" name="usname" value="{{ usname }}" style="align-items: center;">
+            <input type="hidden" id="usemail" name="usemail" value="{{ usemail }}" style="align-items: center;">
+            <input type="hidden" id="uspassword" name="uspassword" value="{{ uspassword }}"  style="align-items: center;">
+            <div class="form-group">
+                <label for="otp">Enter the OTP you received to your email <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter the OTP" required>
+            </div>
+            <div class="form-group text-center">
+                <span class="det text-danger" id="detail">{{detail}}</span>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8 ">
+                    <div class="btn-container">
+                        <button type="submit" id="create" class="btn btn-primary btn-block button-signup text-center">Submit</button>
+                        <button type="reset" id="clear" class="btn btn-default btn-block button-signup">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     <script>
         setTimeout(function () {
             document.getElementById("detail").style.display = "none";
         }, 5000);
+        
+        var sessionTimeout = 10 * 60 * 1000;
+        var timeout;
+        function startSessionTimeout() {
+            clearTimeout(timeout);
+            timeout = setTimeout(logout, sessionTimeout);
+        }
+        function logout() {
+            window.location.href = "/logout";
+        }
+        document.addEventListener("mousemove", startSessionTimeout);
+        document.addEventListener("keydown", startSessionTimeout);
+
     </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

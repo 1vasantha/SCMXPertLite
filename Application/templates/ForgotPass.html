@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <title>SCMXPertLite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Login Page </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         #Styling {
             color: black;
             height: 40%;
-            width: 57%;
+            width: 45%;
             padding-top: 2%;
             padding-bottom: 2%;
-            padding-left: 3%;
+            padding-left: 1.2%;
             margin-top: 1%;
-            margin-left: 20%;
+            margin-left: 30%;
             margin-right: 30%;
             margin-bottom: 1%;
-            background-color: rgba(238, 15, 3, 0.7);
+            background-color:#749585;
             background-size: cover;
-            font-size: 140%;
+            font-size: 103%;
+            font-weight: 600;
         }
-
-        input[type="email"] {
-            width: 50%;
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
             margin: 6px 0;
             align-items: center;
             text-align: center;
@@ -32,67 +34,20 @@
             font-size: 17px;
             margin-top: 0%;
         }
-
         .Header {
             margin-top: 0.5%;
-            background: #f0f0f0c0;
+            background: #666666;
+            animation: colorChange 5s infinite;
             font-size: 160%;
-            margin-left: 20%;
-            margin-right: 20%;
+            margin-left: 30%;
+            margin-right: 23%;
+            width: 45%;
+            color: black;
         }
-
-        #submitButton {
-            border-radius: 3px;
-            border: none;
-            background: linear-gradient(to right, #3548ea, #237fdb);
-            box-shadow: 0px 8px 15px rgb(156, 186, 251);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 7px 25px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: center;
-            transition: all 80ms ease-in;
-        }
-
-        #submitButton:hover {
-            cursor: pointer;
-            transform: translateY(-1px) scale(1.01);
-            background: linear-gradient(to right, #1790b5, #2f9ad4);
-            box-shadow: 0px 15px 20px rgba(90, 149, 197, 0.4);
-        }
-
-        #submitButton:active {
-            transform: scale(0.95);
-        }
-
         a {
             color: white;
             text-decoration: none;
         }
-        input[type=text],
-        input[type=password] {
-            width: 90%;
-            padding: 9px 20px;
-            display: inline-block;
-            box-sizing: border-box;
-        }
-        
-        #detail{
-            text-align: center;
-            color: red;
-            font-size: large;
-            justify-content: center;
-        }
-        #message1{
-            text-align: center;
-            color: green;
-            font-size: large;
-            justify-content: center;
-        }
-        
-
         #message {
             justify-content: center;
             align-items: center;
@@ -104,40 +59,71 @@
             margin-top: 20px;
             margin-left: 82%;
         }
-
         #message p {
             padding: 10px 10px;
             font-size: 15px;
         }
-        
-
         .valid {
             color: green;
         }
-
         .valid:before {
             position: relative;
             left: -35px;
             content: "✔";
         }
-
         .invalid {
             color: red;
         }
-
         .invalid:before {
             position: relative;
             left: -35px;
             content: "✖";
         }
+        .button-signup {
+            background-color: #666666;
+            animation: colorChange 5s infinite;
+            border: none;
+            color: #f8f9fa;
+        }
 
+        @keyframes colorChange {
+            0% {
+                background-color:#666666;
+            }
+
+            50% {
+                background-color: #2b5a4b;
+            }
+
+            100% {
+                background-color: #666666;
+            }
+        }
+        .button-signup:hover:before {
+            opacity: 1;
+            transform: translate(-30%, -30%);
+        }
+
+        .button-signup:hover {
+            background-color: rgb(3, 170, 3);
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 45%;
+            margin-right:0%;
+        }
+
+        .btn-container .btn {
+            flex: 1;
+            margin: 0 20px;
+        }
     </style>
 </head>
-
 <body>
     <div class="Header">
-        <h2 style="text-align: center;"><b> SCMXPertLite </b></h2>
-        <h3 style="text-align:center"><b>Reset Your Password</b></h3>
+        <h2 class="text-center"><b>SCMXPertLite</b></h2>
+        <h3 class="text-center"><b>Reset Your Password</b></h3>
     </div>
     <div id="message">
         <h4>Password must contain:</h4>
@@ -146,19 +132,45 @@
         <p id="number" class="invalid">A Number</p>
         <p id="length" class="invalid">Minimum 8 characters</p>
     </div>
-    <div id="Styling">
+    <div class="container text-center">
+        <img src="/static/forgotpasswordimg2.png" alt="Your Image" class="img-fluid">
+    </div>
+    <div id="Styling" class="container">
         <form action="/forgotpass" method="post">
-            <span id="message1">{{message}}</span><br><br>
-            <input type="email" id="email" name="email" value="{{ email }}" style="align-items: center;" readonly><br><br>
-            <label for="password">New Password<span style="color:red">*</span></label><br>
-            <input type="password" id="password" name="password" placeholder="Enter the new password" onclick="passcheck()" onkeyup="passcheck2()" onblur="passcheck3()" required><br><br>
-            <label for="confpassword">Confirm New Password<span style="color:red">*</span></label><br>
-            <input type="password" id="confpassword" name="cnfpassword" placeholder="Enter the new password" onkeyup="passcheck4()" required><br>
-            <span id="wrps"></span><br>
-            <label for="otp">Enter the otp you received to your mail<span style="color:red">*</span></label><br>
-            <input type="text" id="otp" name="otp" placeholder="Enter the otp" required><br><br>
-            <span id="detail">{{detail}}</span><br>
-            <button type="submit" id="submitButton" class="submit_btn">Reset</a></button>
+            <div class="text-center">
+                <span id="message1" class="text-center text-success">{{message}}</span>
+            </div>
+            <br>
+            <div class="text-success">
+                <input type="email" id="email" name="email" value="{{ email }}" style="align-items: center;" readonly>
+            </div>
+            <br>
+            <label for="password">New Password<span class="text-danger">*</span></label>
+            <br>
+            <input type="password" id="password" name="password" placeholder="Enter the new password" onclick="passcheck()" onkeyup="passcheck2()" onblur="passcheck3()" required>
+            <br><br>
+            <label for="confpassword">Confirm New Password<span class="text-danger">*</span></label>
+            <br>
+            <input type="password" id="confpassword" name="cnfpassword" placeholder="Enter the new password" onkeyup="passcheck4()" required>
+            <br>
+            <span id="wrps"></span>
+            <br>
+            <label for="otp">Enter the OTP you received to your email<span class="text-danger">*</span></label>
+            <br>
+            <input type="text" id="otp" name="otp" placeholder="Enter the OTP" required>
+            <br>
+            <div class="text-center">
+                <span id="detail" class="text-center text-danger">{{detail}}</span>
+            </div>
+            <br>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8 ">
+                    <div class="btn-container">
+                        <button type="submit" id="create" class="btn btn-primary btn-block button-signup text-center">Submit</button>
+                        <button type="reset" id="clear" class="btn btn-default btn-block button-signup">Clear</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
     <script>
@@ -167,14 +179,14 @@
             var confpassword = document.getElementById("confpassword").value;
             if (password != confpassword) {
                 document.getElementById('wrps').style.color = 'red';
-                document.getElementById('wrps').innerHTML = '☒ Use same password';
-                document.getElementById('submitButton').disabled = true;
-                document.getElementById('submitButton').style.opacity = (0.4);
+                document.getElementById('wrps').innerHTML = '☒ Use the same password';
+                document.getElementById('create').disabled = true;
+                document.getElementById('create').style.opacity = (0.4);
             } else {
                 document.getElementById('wrps').style.color = 'green';
                 document.getElementById('wrps').innerHTML = '🗹 Password Matched';
-                document.getElementById('submitButton').disabled = false;
-                document.getElementById('submitButton').style.opacity = (1);
+                document.getElementById('create').disabled = false;
+                document.getElementById('create').style.opacity = (1);
             }
         }
         function passcheck() {
@@ -217,7 +229,6 @@
                 length.classList.remove("valid");
                 length.classList.add("invalid");
             }
-
         }
         function passcheck3() {
             document.getElementById("message").style.display = "none";
@@ -226,8 +237,19 @@
             document.getElementById("detail").style.display = "none";
             document.getElementById("message1").style.display = "none";
         }, 5000);
+        
+        var sessionTimeout = 10 * 60 * 1000;
+        var timeout;
+        function startSessionTimeout() {
+            clearTimeout(timeout);
+            timeout = setTimeout(logout, sessionTimeout);
+        }
+        function logout() {
+            window.location.href = "/logout";
+        }
+        document.addEventListener("mousemove", startSessionTimeout);
+        document.addEventListener("keydown", startSessionTimeout);
+
     </script>
-
 </body>
-
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>SCMXPertLite</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -9,9 +10,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <style>
         .navbar {
-            background-color:#2b5a4b;
+            background-color: #2b5a4b;
             animation: colorAnimation 5s infinite alternate;
         }
+
         @keyframes colorAnimation {
             0% {
                 background-color: #666666;
@@ -29,26 +31,33 @@
         .navbar-toggler {
             border-color: #ffffff;
         }
+
         .navbar-toggler i {
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing {
             justify-content: flex-start;
             margin-left: 0;
         }
+
         .navbar-nav.custom-spacing .nav-link {
             margin-right: 100px;
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing .nav-link:hover {
             color: red !important;
         }
+
         .navbar-nav.custom-spacing .active {
             font-weight: bold;
         }
-        .collapse{
-            background-color:#749585 ;
+
+        .collapse {
+            background-color: #749585;
         }
+
         .container {
             display: flex;
             align-items: flex-start;
@@ -73,7 +82,6 @@
             text-align: left;
             overflow: hidden;
             margin-top: 4%;
-            margin-left: 10%;
         }
 
         .image img {
@@ -90,16 +98,27 @@
         }
 
         @keyframes typing {
-            0% { width: 0; }
-            100% { width: 100%; }
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
         }
 
         @keyframes deleting {
-            0% { width: 100%; }
-            100% { width: 0; }
+            0% {
+                width: 100%;
+            }
+
+            100% {
+                width: 0;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <div class="container-fluid">
@@ -148,12 +167,15 @@
             </div>
         </div>
     </div>
+    <div class="greet" style="color:Black;font-weight: 600; font-size:180%;text-align: center;margin-top: 2%;">Hi
+        {{name}} {{Greet}}</div>
     <div class="container">
         <div class="content" id="content">
             <div class="typing-effect">
                 <p>Welcome to the Shipments Dashboard. </p>
                 <p>Here, you can create and manage your shipments efficiently.</p>
-                <p>Stay organized and keep track of all your shipping activities in one place.</p>
+                <p>Stay organized and keep track of all your shipping activities in</p>
+                <p>one place.</p>
             </div>
         </div>
 
@@ -183,7 +205,7 @@
                 collapse.style.display = 'none';
             }
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             setInterval(changeContent, 10000); // Change content after 5 seconds
         });
 
@@ -206,7 +228,8 @@
             <div class="typing-effect">
                     <p>Welcome to the Shipments Dashboard.</p>
                     <p>Here, you can create and manage your shipments efficiently.</p>
-                    <p>Stay organized and keep track of all your shipping activities in one place.</p>
+                    <p>Stay organized and keep track of all your shipping activities in</p>
+                    <p> one place.</p>
                 </div>
             `;
 
@@ -222,6 +245,18 @@
                 `;
             }
         }
+        var sessionTimeout = 10 * 60 * 1000;
+        var timeout;
+        function startSessionTimeout() {
+            clearTimeout(timeout);
+            timeout = setTimeout(logout, sessionTimeout);
+        }
+        function logout() {
+            window.location.href = "/logout";
+        }
+        document.addEventListener("mousemove", startSessionTimeout);
+        document.addEventListener("keydown", startSessionTimeout);
     </script>
 </body>
+
 </html>

@@ -3,7 +3,7 @@ FROM python:3
 WORKDIR .
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt python-dotenv
+RUN pip install -r requirements.txt 
 
 COPY . .
 

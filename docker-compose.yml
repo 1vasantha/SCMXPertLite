@@ -1,7 +1,8 @@
 version: '3'
+
 services:
   application:
-    image: scm:latest
+    image: lebakuvasantha/scm:latest
     build:
       context: ./Application
       dockerfile: Dockerfile
@@ -11,29 +12,31 @@ services:
       - "8000:8000"
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: bitnami/zookeeper:latest
     container_name: zookeeper
     hostname: zookeeper
     ports:
       - "2181:2181"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: bitnami/kafka:latest
     container_name: kafka
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "SCM:1:1"
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS="SCM:1:1"
+      - ALLOW_PLAINTEXT_LISTENER=yes
 
   server:
-    image: server:latest
+    image: lebakuvasantha/server:latest
     build:
       context: ./Server
       dockerfile: Dockerfile
@@ -45,7 +48,7 @@ services:
 
 
   producer:
-    image: producer:latest
+    image: lebakuvasantha/producer:latest
     build:
       context: ./Producer
       dockerfile: Dockerfile
@@ -57,7 +60,7 @@ services:
       KAFKA_TOPIC: SCM
       
   consumer:
-    image: consumer:latest
+    image: lebakuvasantha/consumer:latest
     build:
       context: ./Consumer
       dockerfile: Dockerfile
