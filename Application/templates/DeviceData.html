@@ -83,13 +83,14 @@
 
         .Heading {
             background-color: #666666;
-            padding-top: 1.5%;
-            padding-bottom: 1.5%;
+            padding-top: 1%;
+            padding-bottom: 1%;
             text-align: center;
             margin-top: 30px;
-            width:70%;
-            margin-left: 15%;
-
+            width: 62%;
+            margin-left: 19%;
+            animation: colorAnimation 5s infinite alternate;
+            color: white;
         }
 
         .Devices {
@@ -114,17 +115,17 @@
         }
 
         .TableStyle {
-            width: 70%;
+            width: 62%;
             align-items: center;
             border-radius: 5px;
             padding: 50px 0;
             display: flex;
             flex-direction: column;
-            font-size: 130%;
+            font-size: 110%;
             position: absolute;
             top: 30%;
             background-color: #749585;
-            margin-left: 15%;
+            margin-left: 19%;
         }
     </style>
 </head>
@@ -145,16 +146,14 @@
                                 <i class="fas fa-sign-out-alt me-1"></i>Logout
                             </a>
                         </li>
-                        {% if "write" in request.session.get("permissions", []) %}
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/DeviceData">
                                 <i class="fas fa-database me-1"></i>Device Data
                             </a>
                         </li>
-                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Shipment">
-                                <i class="fas fa-box me-1"></i>Shipments
+                                <i class="fas fa-box me-1"></i> Create Shipments
                             </a>
                         </li>
                         <li class="nav-item">
@@ -178,7 +177,7 @@
         </div>
     </div>
     <div class="Heading">
-        <h1 style="font-size: 250%;font-weight: 600">Device Data Stream</h1>
+        <h1 style="font-size: 190%;font-weight: 600">Device Data Stream</h1>
     </div>
     <div class="Devices">
         <div class="TableStyle">
@@ -229,7 +228,7 @@
                 devices.style.transform = 'translateY(0)';
             }
         });
-        
+
         var sessionTimeout = 10 * 60 * 1000;
         var timeout;
         function startSessionTimeout() {
@@ -241,7 +240,6 @@
         }
         document.addEventListener("mousemove", startSessionTimeout);
         document.addEventListener("keydown", startSessionTimeout);
-
     </script>
 </body>
 

@@ -2,12 +2,12 @@ version: '3'
 
 services:
   application:
-    image: lebakuvasantha/scm:latest
+    image: lebakuvasantha/scmxpertlite:latest
     build:
       context: ./Application
       dockerfile: Dockerfile
     command: uvicorn SCM:app --host 0.0.0.0 --port 8000
-    container_name: scm
+    container_name: scmxpertlite
     ports:
       - "8000:8000"
 
@@ -70,5 +70,6 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC: SCM
+
 networks:
   my-network:

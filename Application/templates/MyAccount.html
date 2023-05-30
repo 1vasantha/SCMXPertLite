@@ -13,9 +13,10 @@
     <title>SCMXPertLite</title>
     <style>
         .navbar {
-            background-color:#2b5a4b;
+            background-color: #2b5a4b;
             animation: colorAnimation 5s infinite alternate;
         }
+
         @keyframes colorAnimation {
             0% {
                 background-color: #666666;
@@ -33,26 +34,33 @@
         .navbar-toggler {
             border-color: #ffffff;
         }
+
         .navbar-toggler i {
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing {
             justify-content: flex-start;
             margin-left: 0;
         }
+
         .navbar-nav.custom-spacing .nav-link {
             margin-right: 100px;
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing .nav-link:hover {
             color: red !important;
         }
+
         .navbar-nav.custom-spacing .active {
             font-weight: bold;
         }
-        .collapse{
-            background-color:#749585 ;
+
+        .collapse {
+            background-color: #749585;
         }
+
         .Main {
             width: 100wh;
             height: 80vh;
@@ -111,6 +119,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            color:white
         }
 
         .Accounts h1 {
@@ -124,6 +133,10 @@
 
         .red {
             color: red;
+        }
+        .message {
+            color: red;
+            font-weight: 400;
         }
     </style>
 </head>
@@ -150,10 +163,16 @@
                                 <i class="fas fa-database me-1"></i>Device Data
                             </a>
                         </li>
+                        {% else %}
+                        <li class="nav-item disabled">
+                            <div class="nav-link text-muted" onclick="showMessage()" style="cursor: not-allowed;">
+                                <i class="fas fa-database me-1"></i>Device Data
+                            </div>
+                        </li>
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Shipment">
-                                <i class="fas fa-box me-1"></i>Shipments
+                                <i class="fas fa-box me-1"></i>Create Shipments
                             </a>
                         </li>
                         <li class="nav-item">
@@ -230,8 +249,11 @@
                 {% endfor %}
             </table>
         </div>
-    </div>
-    <span class="{{ color }}" style="margin-left: 40%;font-size: 120%;">{{message}}</span>
+    </div><br><br><br>
+    {% if message %}
+    <div class="{{ color }}" style="margin-left: 38%;font-size: 120%;">{{ message }}</div>
+{% endif %}<br><br>
+ 
     <script>
         const navbar = document.querySelector('.navbar');
         const toggleButton = navbar.querySelector('.navbar-toggler');
@@ -263,7 +285,7 @@
                 devices.style.transform = 'translateY(0)';
             }
         });
-        
+
         var sessionTimeout = 10 * 60 * 1000;
         var timeout;
         function startSessionTimeout() {
@@ -275,7 +297,18 @@
         }
         document.addEventListener("mousemove", startSessionTimeout);
         document.addEventListener("keydown", startSessionTimeout);
+        function showMessage() {
+            var message = document.createElement("div");
+            message.className = "message";
+            message.innerHTML = "You do not have permission to access Device Data.";
 
+            var container = document.getElementsByClassName("nav-item")[1];
+            container.appendChild(message);
+
+            setTimeout(function () {
+                container.removeChild(message);
+            }, 2000);
+        }
     </script>
 </body>
 

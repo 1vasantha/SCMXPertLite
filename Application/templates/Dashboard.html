@@ -116,6 +116,11 @@
                 width: 0;
             }
         }
+
+        .message {
+            color: red;
+            font-weight: 400;
+        }
     </style>
 </head>
 
@@ -141,10 +146,16 @@
                                 <i class="fas fa-database me-1"></i>Device Data
                             </a>
                         </li>
+                        {% else %}
+                        <li class="nav-item disabled">
+                            <div class="nav-link text-muted" onclick="showMessage()" style="cursor: not-allowed;">
+                                <i class="fas fa-database me-1"></i>Device Data
+                            </div>
+                        </li>
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link text-white" href="/Shipment">
-                                <i class="fas fa-box me-1"></i>Shipments
+                                <i class="fas fa-box me-1"></i>Create Shipments
                             </a>
                         </li>
                         <li class="nav-item">
@@ -180,7 +191,7 @@
         </div>
 
         <div class="image" id="image">
-            <img src="/static/shippingimg.avif" alt="First Image">
+            <img src="/static/shippingimg.jpg" alt="First Image">
         </div>
     </div>
     <script>
@@ -236,7 +247,7 @@
             if (contentElement.innerHTML === text1) {
                 contentElement.innerHTML = text2;
                 imageElement.innerHTML = `
-                <img src="/static/shippingimg.avif" alt="First Image">
+                <img src="/static/shippingimg.jpg" alt="First Image">
                 `;
             } else {
                 contentElement.innerHTML = text1;
@@ -256,6 +267,18 @@
         }
         document.addEventListener("mousemove", startSessionTimeout);
         document.addEventListener("keydown", startSessionTimeout);
+        function showMessage() {
+            var message = document.createElement("div");
+            message.className = "message";
+            message.innerHTML = "You do not have permission to access Device Data.";
+
+            var container = document.getElementsByClassName("nav-item")[1];
+            container.appendChild(message);
+
+            setTimeout(function () {
+                container.removeChild(message);
+            }, 2000);
+        }
     </script>
 </body>
 

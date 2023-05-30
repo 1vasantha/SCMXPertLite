@@ -4,12 +4,21 @@ import pymongo
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
+from fastapi import HTTPException
 
 load_dotenv()
 
 topicName=os.getenv("topicName")
 mongouri=os.getenv("mongouri")
-client = pymongo.MongoClient(mongouri)
+from pymongo.errors import ConnectionFailure 
+mongouri=os.getenv("mongouri")
+try:
+    client = pymongo.MongoClient(mongouri)
+except ConnectionFailure as e:#Handle the Connection Error
+    error_msg = f"Error connecting to the database: {e}"
+    print(error_msg)
+    raise HTTPException(status_code=500, detail=error_msg)
+
 database=os.getenv("database")
 collection=os.getenv("collection")
 deviceData = client[database][collection]

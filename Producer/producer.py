@@ -20,19 +20,19 @@ producer = KafkaProducer(
 ) 
 
 try:
-    content = server_socket.recv(1024).decode('utf-8')
-    info = json.loads(content)
-    data = {
-        "Battery_Level": info['Battery_Level'],
-        "Device_ID": info['Device_ID'],
-        "First_Sensor_temperature": info['First_Sensor_temperature'],
-        "Route_From": info['Route_From'],
-        "Route_To": info['Route_To']
-    }
-    producer.send(topicName, value=data)
-    print(data)
-    
+    for i in range(20):
+        content = server_socket.recv(1024).decode('utf-8')
+        info = json.loads(content)
+        data = {
+            "Battery_Level": info['Battery_Level'],
+            "Device_ID": info['Device_ID'],
+            "First_Sensor_temperature": info['First_Sensor_temperature'],
+            "Route_From": info['Route_From'],
+            "Route_To": info['Route_To']
+        }
+        producer.send(topicName, value=data)
+        print(data)
+    producer.flush()
 except Exception as e: 
     print(e) 
-producer.flush()
 server_socket.close()
