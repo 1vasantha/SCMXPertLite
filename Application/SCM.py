@@ -9,6 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 import os
 from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
+
 
 load_dotenv()
 
@@ -22,6 +24,8 @@ except ConnectionFailure as e:#Handle the Connection Error
     error_msg = f"Error connecting to the database: {e}"
     print(error_msg)
     raise HTTPException(status_code=500, detail=error_msg)
+
+
 database=os.getenv("database")
 collection1=os.getenv("collection1")
 collection2=os.getenv("collection2")
@@ -97,14 +101,22 @@ async def add_header(request: Request, call_next):
 @app.get("/",response_class=HTMLResponse)
 def home(request:Request):
     request.session.clear()
-    return templates.TemplateResponse("SignUp.html",{"request":request})
+    response_data = {"detail": "Welcome to SignUp Page"}
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse(content=response_data)
+    else:
+        return templates.TemplateResponse("SignUp.html",{"request":request})
 
  #Post for SignUp Page       
 @app.post("/",response_class=HTMLResponse)
 def create(request:Request,response: Response, name:str =Form(...), email:str =Form(...),password:str =Form(...)):
     user=signUp.find_one({"email": email})
     if user:
-        return templates.TemplateResponse("SignUp.html",{"request":request,"msg":"Email is already exist"})
+        response_data = {"detail": "Email is already exist"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("SignUp.html",{"request":request,"msg":"Email is already exist"})
     else:
         global mainOtp2
         hashs_password = pwd_context.hash(password)
@@ -120,6 +132,10 @@ def create(request:Request,response: Response, name:str =Form(...), email:str =F
                 smtp.starttls()
                 smtp.login(senderemail, senderpassword)
                 smtp.send_message(msg)
+            response_data = {"detail": "Thanks for entering Details"}
+            if request.headers.get("accept") == "application/json":
+                return JSONResponse(content=response_data)
+            else:
                 return templates.TemplateResponse("SignUpOtp.html",{"request":request,"usname":name,"usemail":email,"uspassword":hashs_password})
         except SMTPException as e:# Handle the SMTP exception
             error_msg = f"Error sending email: {e}"
@@ -129,20 +145,28 @@ def create(request:Request,response: Response, name:str =Form(...), email:str =F
 @app.get("/SignIn",response_class=HTMLResponse)
 def login(request:Request):
         request.session.clear()
-        return templates.TemplateResponse("SignIn.html", {"request": request})
+        response_data = {"detail": "Welcome to SignIn Page"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request})
     
 @app.post("/SignIn",response_class=HTMLResponse,name="SignIn")
 def login(request:Request, email:str=Form(...),password:str=Form(...)):
     user=signUp.find_one({"email":email})
     request.session.clear()
     if not user:
-        return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"This Email id not Existed. Use your registered Email or create one."})
+        response_data = {"detail": "Email is not Existed"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"This Email id not Existed. Use your registered Email or create one."})
     else:
         try:
             passw=user['password']
             permissions=user['permissions']
         except KeyError as e:
-            error_msg = "Password key not found in user dictionary"
+            error_msg = "Password and permission values are missing"
             raise HTTPException(status_code=500, detail=error_msg) from e
         if pwd_context.verify(password,passw):
             request.session["name"] = user["name"]
@@ -150,29 +174,61 @@ def login(request:Request, email:str=Form(...),password:str=Form(...)):
             request.session["permissions"]=permissions
             request.session["is_authenticated"] = True
             if "maintain" in permissions:
-                return templates.TemplateResponse("Dashboard.html", {"request": request, "name": user["name"],"Greet":" You have all your  superior Procurity","url": "/Dashboard"})
+                response_data = {"detail": "Signed In Succesfully as an Superior"}
+                if request.headers.get("accept") == "application/json":
+                    return JSONResponse(content=response_data)
+                else:
+                    return templates.TemplateResponse("Dashboard.html", {"request": request, "name": user["name"],"Greet":" You have all your  superior Procurity","url": "/Dashboard"})
             elif  "write" in permissions: 
-                return templates.TemplateResponse("Dashboard.html", {"request": request, "name": user["name"],"Greet":" You can have all your admin Ownership","url": "/Dashboard"})
+                response_data = {"detail": "Signed In Succesfully as an Admin"}
+                if request.headers.get("accept") == "application/json":
+                    return JSONResponse(content=response_data)
+                else:
+                    return templates.TemplateResponse("Dashboard.html", {"request": request, "name": user["name"],"Greet":" You can have all your admin Ownership","url": "/Dashboard"})
             else:
-                return templates.TemplateResponse("Dashboard.html", {"request":request,"name": user["name"]})
+                response_data = {"detail": "Signed In Succesfully"}
+                if request.headers.get("accept") == "application/json":
+                    return JSONResponse(content=response_data)
+                else:
+                    return templates.TemplateResponse("Dashboard.html", {"request":request,"name": user["name"]})
         else:
-            return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"Your Password is incorrect"})
+            response_data = {"detail": "Password is Incorrect"}
+            if request.headers.get("accept") == "application/json":
+                return JSONResponse(content=response_data)
+            else:
+                return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"Your Password is incorrect"})
 
 #Get for Dashboard Page
 @app.get("/Dashboard",response_class=HTMLResponse)
-def home(request:Request):
+def dashboard(request:Request):
     is_authenticated = request.session.get("is_authenticated")
     email= request.session.get("email")
     name=request.session.get("name")
     permissions=request.session.get("permissions")
-    if  not is_authenticated or not email:
-        return templates.TemplateResponse("SignIn.html", {"request": request,"detail":"You are not authorized.Please login and get authorized"})
+    if not is_authenticated or not email:
+        response_data = {"detail": "You are not authorized. Please login and get authorized"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]})
     if "maintain" in permissions:
-        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "superior","Greet":" , You have all your  superior Procurity"})
+        response_data = {"detail": "Signed In Succesfully as an Superior"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "superior","Greet":", You have all your  superior Procurity"})
     elif "write" in permissions:
-        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "admin","Greet":", You can have all your admin Ownership"})
+        response_data = {"detail": "Signed In Succesfully as an Admin"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"user_type": "admin","Greet":", You can have all your admin Ownership"})
     else:
-        return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"Greet":""})
+        response_data = {"detail": "Signed In Succesfully"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Dashboard.html", {"request": request, "name": name,"Greet":""})
     
 #Get for Shipment Creation Page
 @app.get("/Shipment",response_class=HTMLResponse)
@@ -182,13 +238,29 @@ def shipping(request:Request):
     name=request.session.get("name")
     permissions=request.session.get("permissions")
     if not is_authenticated or not email:
-        return templates.TemplateResponse("SignIn.html", {"request": request,"detail":"You are not authorized.Please login and get authorized"})
+        response_data = {"detail": "You are not authorized. Please login and get authorized"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]})
     if "maintain" in permissions:
-        return templates.TemplateResponse("Shipment.html", {"request": request,"detail":"Hi Superior, You too can place your order"})
+        response_data = {"detail": "Welcome to Shipments page Superior"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Shipment.html", {"request": request,"detail":"Hi Superior, You too can place your order"})
     elif "write" in permissions:
-        return templates.TemplateResponse("Shipment.html", {"request": request,"detail":"Hey Admin, You can also place the orders"})
+        response_data = {"detail": "Welcome to Shipments page Admin"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Shipment.html", {"request": request,"detail":"Hey Admin, You can also place the orders"})
     else:
-        return templates.TemplateResponse("Shipment.html", {"request": request, "name": name})
+        response_data = {"detail": "Welcome to Shipments Page"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("Shipment.html", {"request": request, "name": name})
    
 #Post for Shipment Creation Page        
 @app.post("/Shipment",response_class=HTMLResponse,name="Shipping")
@@ -197,10 +269,19 @@ def shipping(request:Request, ShipNum:int=Form(...), RoutDet:str=Form(...),Devic
     email= request.session.get("email")
     name=request.session.get("name")
     if is_authenticated and email:
-        shipments.insert_one(dict(Shipment(uname=name,uemail=email,ShipNum=ShipNum,RoutDet=RoutDet,Device=Device,PoNum=PoNum,NdcNum=NdcNum,SeNumOfGoods=SeNumOfGoods,ContNum=ContNum,GoodType=GoodType,ExpDelDate=ExpDelDate,DelNum=DelNum,BatchId=BatchId,ShipDes=ShipDes))) 
-        return templates.TemplateResponse("Shipment.html",{"request":request,"detail":"Your order placed successfully. Feel free to place another if u need"}) 
+        response_data = {"detail": "Placed your Shipment Successfully"}
+        if request.headers.get("accept") == "application/json":
+            shipments.insert_one(dict(Shipment(uname=name,uemail=email,ShipNum=ShipNum,RoutDet=RoutDet,Device=Device,PoNum=PoNum,NdcNum=NdcNum,SeNumOfGoods=SeNumOfGoods,ContNum=ContNum,GoodType=GoodType,ExpDelDate=ExpDelDate,DelNum=DelNum,BatchId=BatchId,ShipDes=ShipDes))) 
+            return JSONResponse(content=response_data)
+        else:
+            shipments.insert_one(dict(Shipment(uname=name,uemail=email,ShipNum=ShipNum,RoutDet=RoutDet,Device=Device,PoNum=PoNum,NdcNum=NdcNum,SeNumOfGoods=SeNumOfGoods,ContNum=ContNum,GoodType=GoodType,ExpDelDate=ExpDelDate,DelNum=DelNum,BatchId=BatchId,ShipDes=ShipDes))) 
+            return templates.TemplateResponse("Shipment.html",{"request":request,"detail":"Your order placed successfully. Feel free to place another if u need"}) 
     else:
-        return templates.TemplateResponse("Shipment.html",{"request":request,"detail":"you are logged out. So we can't place your order"}) 
+        response_data = {"detail": "you are logged out. So we can't place your order"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]}) 
 
 #Get for MYAcoount Page
 @app.get("/MyAccount", response_class=HTMLResponse)
@@ -210,7 +291,11 @@ def account(request: Request):
     name = request.session.get("name")
     permissions = request.session.get("permissions")
     if not is_authenticated or not email:
-        return templates.TemplateResponse("SignIn.html", {"request": request, "detail": "You are not authorized. Please login and get authorized"})
+        response_data = {"detail": "You are not authorized. Please login and get authorized"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]})
     if "maintain" in permissions:
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
@@ -219,9 +304,22 @@ def account(request: Request):
             for user in users:
                 if "maintain" not in user["permissions"]:
                     data.append((user["name"], user["email"], user["permissions"]))
-            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"}) 
+            if request.headers.get("accept")=="application/json":
+                users=signUp.find({})
+                shipmentDisplay=[]
+                for user in users: 
+                    if "maintain" not in user["permissions"]:
+                        user["_id"] = str(user["_id"])
+                        shipmentDisplay.append(user) 
+                user_data = [user for user in shipmentDisplay] 
+                response_data = {
+                "message": f"Hi {name}, your email is {email}", 
+                "Users" : user_data}
+                return JSONResponse(content=response_data)
+            else:
+                return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"}) 
         except KeyError as e:
-            error_msg = "Password key not found in user dictionary"
+            error_msg = "Values are missing. No user is found"
             raise HTTPException(status_code=500, detail=error_msg) from e
     elif "write" in permissions:
         headings = ("Username", "Registered Email", "Permissions")
@@ -231,12 +329,30 @@ def account(request: Request):
             for user in users:
                 if "write" not in user["permissions"]:
                     data.append((user["name"], user["email"], user["permissions"]))
-            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
+            if request.headers.get("accept")=="application/json":
+                users=signUp.find({})
+                shipmentDisplay=[]
+                for user in users: 
+                    if "write" not in user["permissions"]:
+                        user["_id"] = str(user["_id"])
+                        shipmentDisplay.append(user) 
+                user_data = [user for user in shipmentDisplay] 
+                response_data = {
+                "message": f"Hi {name}, your email is {email}", 
+                "Users" : user_data}
+                return JSONResponse(content=response_data)
+            else:
+                return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
         except KeyError as e:
-            error_msg = "Password key not found in user dictionary"
+            error_msg = "Values are missing. No user is found"
             raise HTTPException(status_code=500, detail=error_msg) from e
     else:
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "name": name, "email": email})
+        response_data = {
+                "message": f"Hi {name}, your email is {email}"}
+        if request.headers.get("accept")=="application/json":
+            return JSONResponse(content=response_data)
+        else:
+            return templates.TemplateResponse("MyAccount.html", {"request": request, "name": name, "email": email})
 
 #Get for Our Shipments Display
 @app.get("/MyShipment",response_class=HTMLResponse)
@@ -246,35 +362,76 @@ def shipmentDisplay(request:Request):
     name=request.session.get("name")
     permissions=request.session.get("permissions")
     if not is_authenticated or not email:
-        return templates.TemplateResponse("SignIn.html", {"request": request, "detail": "You are not authorized. Please login and get authorized"})
-    if "write" in permissions:
-        headings=("placed By","from email","Shipment Number","Route Details","Device","Po Number","Ndc Number","Serial Number Of Goods","Container Number","Good Type","Expected Delivery Date","Delivery Number","BatchId","Shipment Description")
-        data=[]
-        good=shipments.find()
-        if shipments.find_one({}) is not None:
-            for i in good:
-                b=list(i.values())
-                c=list(map(str, b))
-                c.pop(0)
-                d=tuple(c)
-                data.append(d)
-            return templates.TemplateResponse("MyShipment.html",{"request":request,"headings":headings,"data":tuple(data)})    
+        response_data = {"detail": "You are not authorized. Please login and get authorized"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
         else:
-            return templates.TemplateResponse("MyShipment.html",{"request":request,"Shipments":"Oops!No one placed any shipment"})
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]})
+    if "write" in permissions:
+        if request.headers.get("accept") == "application/json":
+            shipmentDisplay=[]
+            if shipments.find_one({}) is not None:
+                info = shipments.find({})
+                for shipment in info: 
+                    shipment["_id"] = str(shipment["_id"])
+                    shipmentDisplay.append(shipment) 
+                shipment_data = [shipment for shipment in shipmentDisplay] 
+                return JSONResponse(content=shipment_data)
+            else:
+                response_data = {"detail": "Oops!No one placed any shipment"}
+                return JSONResponse(content=response_data)
+        else:   
+            headings=("placed By","from email","Shipment Number","Route Details","Device","Po Number","Ndc Number","Serial Number Of Goods","Container Number","Good Type","Expected Delivery Date","Delivery Number","BatchId","Shipment Description")
+            data=[]
+            if shipments.find_one({}) is not None:
+                good=shipments.find()
+                for i in good:
+                    b=list(i.values())
+                    c=list(map(str, b))
+                    c.pop(0)
+                    d=tuple(c)
+                    data.append(d)
+                return templates.TemplateResponse("MyShipment.html",{"request":request,"headings":headings,"data":tuple(data)})    
+            else:
+                response_data = {"detail": "You have no shipments as of now"}
+                if request.headers.get("accept") == "application/json":
+                    return JSONResponse(content=response_data)
+                else:
+                    return templates.TemplateResponse("MyShipment.html",{"request":request,"Shipments":"Oops!No one placed any shipment"})
     else:
-                headings=("Shipment Number","Route Details","Device","Po Number","Ndc Number","Serial Number Of Goods","Container Number","Good Type","Expected Delivery Date","Delivery Number","BatchId","Shipment Description")
-                data=[]
-                a=shipments.find()
-                if shipments.find_one({"uemail":email}):
-                    for i in a:
-                        if i["uemail"]==email:
-                            b=list(i.values())
-                            c=list(map(str, b))
-                            for i in range(3):
-                                c.pop(0)
-                            d=tuple(c)
-                            data.append(d)
-                    return templates.TemplateResponse("MyShipment.html",{"request":request,"header":"Your","headings":headings,"data":tuple(data)})
+        if request.headers.get("accept") == "application/json":
+            shipmentDisplay=[]
+            if shipments.find_one({"uemail": email}):
+                goods=shipments.find()
+                for shipment in goods:
+                    if shipment["uemail"]==email:
+                        shipment.pop("uname") 
+                        shipment.pop("uemail") 
+                        shipment["_id"] = str(shipment["_id"])
+                        shipmentDisplay.append(shipment)
+            else:
+                response_data = {"detail": "You have no shipments as of now"}
+                return JSONResponse(content=response_data) 
+            shipment_data = [shipment for shipment in shipmentDisplay] 
+            return JSONResponse(content=shipment_data)
+        else:   
+            headings=("Shipment Number","Route Details","Device","Po Number","Ndc Number","Serial Number Of Goods","Container Number","Good Type","Expected Delivery Date","Delivery Number","BatchId","Shipment Description")
+            data=[]
+            if shipments.find_one({"uemail":email}):
+                goods=shipments.find()
+                for i in goods:
+                    if i["uemail"]==email:
+                        b=list(i.values())
+                        c=list(map(str, b))
+                        for i in range(3):
+                            c.pop(0)
+                        d=tuple(c)
+                        data.append(d)
+                return templates.TemplateResponse("MyShipment.html",{"request":request,"header":"Your","headings":headings,"data":tuple(data)})
+            else:
+                response_data = {"detail": "You have no shipments as of now"}
+                if request.headers.get("accept") == "application/json":
+                    return JSONResponse(content=response_data)
                 else:
                     return templates.TemplateResponse("MyShipment.html",{"request":request,"Shipments":"You Have No Shipments As of Now"})
 
@@ -296,9 +453,17 @@ def DeviceData(request:Request):
                 c.pop(0)
                 d=tuple(c)
                 data.append(d)
-        return templates.TemplateResponse("DeviceData.html",{"request":request,"headings":headings,"data":tuple(data)})
+        response_data = {"detail": "Welcome to DeviceData Page"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("DeviceData.html",{"request":request,"headings":headings,"data":tuple(data)})
     else:
-        return templates.TemplateResponse("SignIn.html",{"request":request,"detail":"You are not authorized.Please login and get authorized"})
+        response_data = {"detail": "You are not authorized. Please login and get authorized"}
+        if request.headers.get("accept") == "application/json":
+            return JSONResponse(status_code=401, content=response_data)
+        else:
+            return templates.TemplateResponse("SignIn.html", {"request": request, "detail": response_data["detail"]})
 
 #Get for EmailChecking for Forgot Password
 @app.get("/Emailcheck/ForForgotpass", response_class=HTMLResponse)
@@ -330,11 +495,6 @@ async def EmailCheck(request: Request, email: str = Form(...)):
     else:
         return templates.TemplateResponse("EmailCheck.html", {"request": request, "detail": "No such email. Please enter your registered email"})
 
-# Get for Forgot Password to reset the password
-@app.get("/forgotpass", response_class=HTMLResponse)
-def PasswordSetUp(request: Request):
-    return templates.TemplateResponse("ForgotPass.html", {"request": request})
-
 # Post for Forgot Password to reset the password
 @app.post("/forgotpass", response_class=HTMLResponse, name="ForgotPass")
 def PasswordSetUp(request: Request, email: str = Form(...), otp: str = Form(...), password: str = Form(...)):
@@ -348,47 +508,11 @@ def PasswordSetUp(request: Request, email: str = Form(...), otp: str = Form(...)
     signUp.update_one({"email": email}, {"$set": {"password":hashs_password}})
     return templates.TemplateResponse("SignIn.html", {"request": request, "message": "Password updated successfully"})
 
-@app.get("/my-form",response_class=HTMLResponse,name="Operations")
-def my_form(request:Request):
-    is_authenticated = request.session.get("is_authenticated")
-    email = request.session.get("email")
-    name = request.session.get("name")
-    permissions = request.session.get("permissions")
-    if not is_authenticated or not email:
-        return templates.TemplateResponse("SignIn.html", {"request": request, "detail": "You are not authorized. Please login and get authorized"})
-    if "maintain" in permissions:
-        headings = ("Username", "Registered Email", "Permissions")
-        users = signUp.find()
-        data = []
-        try:
-            for user in users:
-                if "maintain" not in user["permissions"]:
-                    data.append((user["name"], user["email"], user["permissions"]))
-            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "superior"}) 
-        except KeyError as e:
-            error_msg = "Password key not found in user dictionary"
-            raise HTTPException(status_code=500, detail=error_msg) from e
-    elif "write" in permissions:
-        headings = ("Username", "Registered Email", "Permissions")
-        users = signUp.find()
-        data = []
-        try:
-            for user in users:
-                if "write" not in user["permissions"]:
-                    data.append((user["name"], user["email"], user["permissions"]))
-            return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": name, "email": email, "users": "users", "user_type": "admin"})
-        except KeyError as e:
-            error_msg = "Password key not found in user dictionary"
-            raise HTTPException(status_code=500, detail=error_msg) from e
-    else:
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "name": name, "email": email})
-
-
-@app.post("/my-form",response_class=HTMLResponse, name="Operations")
-def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
-    usemail= request.session.get("email")
-    usname=request.session.get("name")
-    uspermissions=request.session.get("permissions")
+@app.post("/my-form", response_class=HTMLResponse, name="Operations")
+def my_form(request: Request, email: str = Form(...), action: str = Form(...)):
+    usemail = request.session.get("email")
+    usname = request.session.get("name")
+    uspermissions = request.session.get("permissions")
     if action == "makeAdmin":
         permissions = ["read", "write"]
         result = signUp.update_one({"email": email}, {"$set": {"permissions": permissions}})
@@ -404,54 +528,60 @@ def my_form(request: Request,email:str=Form(...),action:str=Form(...)):
         for user in users:
             if "maintain" not in user["permissions"]:
                 data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": usname, "email": usemail, "users": "users", "user_type": "superior","message":message,"color":color})
+        return templates.TemplateResponse("MyAccount.html",{"request": request,"headings": headings,"data": data,"name": usname,"email": usemail,"users": "users","user_type": "superior","message": message,"color": color,},)
     elif action == "makeUser":
-        permissions=["read"]
+        permissions = ["read"]
         result = signUp.update_one({"email": email}, {"$set": {"permissions": permissions}})
         if result.modified_count == 1:
-            message = "Admin has been made as an user successfully"
+            message = "Admin has been made as a user successfully"
             color = "green"
         else:
             color = "red"
-            message = "This is already an user"
+            message = "This user is already a user"
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
         for user in users:
             if "maintain" not in user["permissions"]:
                 data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": usname, "email": usemail, "users": "users", "user_type": "superior","message":message,"color":color})
+        return templates.TemplateResponse(
+            "MyAccount.html",{"request": request,"headings": headings,"data": data,"name": usname,"email": usemail,"users": "users","user_type": "superior","message": message,"color": color,},)
     elif action == "deleteUser":
-        document = signUp.find_one({"email":email })
+        document = signUp.find_one({"email": email})
         signUp.delete_one(document)
-        message= "User deleted successfully."
+        message = "User deleted successfully."
         color = "green"
         headings = ("Username", "Registered Email", "Permissions")
         users = signUp.find()
         data = []
-        for user in users:
-            if "maintain" in uspermissions:
+        if "maintain" in uspermissions:
+            for user in users:
                 if "maintain" not in user["permissions"]:
                     data.append((user["name"], user["email"], user["permissions"]))
-            elif "write" in uspermissions:
+            return templates.TemplateResponse("MyAccount.html",{"request": request,"headings": headings,"data": data,"name": usname,"email": usemail,"users": "users","user_type": "superior","color": color, "message": message,},)
+        elif "write" in uspermissions:
+            for user in users:
                 if "write" not in user["permissions"]:
                     data.append((user["name"], user["email"], user["permissions"]))
-        return templates.TemplateResponse("MyAccount.html", {"request": request, "headings": headings, "data": data, "name": usname, "email": usemail, "users": "users", "user_type": "admin","color":color,"message":message})
+            return templates.TemplateResponse("MyAccount.html",{"request": request,"headings": headings,"data": data,"name": usname,"email": usemail,"users": "users","user_type": "admin","color": color, "message": message,},)
     else:
-        return templates.TemplateResponse("MyAccount.html", {"request": request,"message": "Invalid action."})
+        return templates.TemplateResponse("MyAccount.html", {"request": request, "message": "Invalid action."})
 
+#Get for logout
 @app.get("/logout",response_class=HTMLResponse)
 def logout(request:Request):
     request.session.clear()
-    return templates.TemplateResponse("SignIn.html",{"request":request})
+    response_data = {"detail": "Oops! You logged out. Login again to get authorized"}
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse(content=response_data)
+    else:
+        return templates.TemplateResponse("SignIn.html",{"request":request})
 
-@app.get("/SignUpOtp",response_class=HTMLResponse)
-def SignUpOtp(request:Request):
-    return templates.TemplateResponse("SignUpOtp.html",{"request":request})
-
-@app.post("/SignUpOtp",response_class=HTMLResponse) 
-def SignUpOtp(request:Request,usname:str=Form(...),usemail:str=Form(...),uspassword:str=Form(...),otp:str=Form(...)):
+#Get post for entering otp to sucessfully signUp 
+@app.post("/SignUpOtp",response_class=HTMLResponse)
+def SignUpOtp(request:Request,username:str=Form(...),useremail:str=Form(...),userpassword:str=Form(...),otp:str=Form(...)):
     if otp != mainOtp2:
-        return templates.TemplateResponse("SignUpOtp.html",{"request":request,"detail":"You have entered a wrong otp, Try to enter the exact otp that you received to ur mail"})
-    signUp.insert_one(dict(Sign_Up(name=usname,email=usemail,password=uspassword,permissions=["read"])))
-    return templates.TemplateResponse("SignIn.html",{"request":request,"message":"You have registered Successfully. Please login"})
+        return templates.TemplateResponse("SignUpOtp.html",{"request":request,"detail":"You have entered a wrong otp, Try to enter the exact otp that you received to ur mail","usname":username,"usemail":useremail,"uspassword":userpassword})
+    else:
+        signUp.insert_one(dict(Sign_Up(name=username,email=useremail,password=userpassword,permissions=["read"])))
+        return templates.TemplateResponse("SignIn.html",{"request":request,"message":"You have registered Successfully. Please login"})

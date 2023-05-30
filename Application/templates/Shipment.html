@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-       .navbar {
-            background-color:#2b5a4b;
+        .navbar {
+            background-color: #2b5a4b;
             animation: colorAnimation 5s infinite alternate;
         }
+
         @keyframes colorAnimation {
             0% {
                 background-color: #666666;
@@ -28,30 +29,38 @@
         .navbar-toggler {
             border-color: #ffffff;
         }
+
         .navbar-toggler i {
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing {
             justify-content: flex-start;
             margin-left: 0;
         }
+
         .navbar-nav.custom-spacing .nav-link {
             margin-right: 100px;
             color: #ffffff;
         }
+
         .navbar-nav.custom-spacing .nav-link:hover {
             color: red !important;
         }
+
         .navbar-nav.custom-spacing .active {
             font-weight: bold;
         }
-        .collapse{
-            background-color:#749585 ;
+
+        .collapse {
+            background-color: #749585;
         }
+
         @media (max-width: 768px) {
             .style {
                 margin-right: 13%;
             }
+
             #shipping {
                 margin-left: 0%;
             }
@@ -70,7 +79,7 @@
         }
 
         .shipping {
-            top: 1504px;
+            top: 1436px;
         }
 
         #shipping {
@@ -94,6 +103,7 @@
             margin: 0%;
             padding: 0%;
         }
+
         .button-signup {
             background-color: #666666;
             animation: colorChange 5s infinite;
@@ -103,7 +113,7 @@
 
         @keyframes colorChange {
             0% {
-                background-color:#666666;
+                background-color: #666666;
             }
 
             50% {
@@ -114,6 +124,7 @@
                 background-color: #666666;
             }
         }
+
         .button-signup:hover:before {
             opacity: 1;
             transform: translate(-30%, -30%);
@@ -122,6 +133,7 @@
         .button-signup:hover {
             background-color: rgb(3, 170, 3);
         }
+
         .btn-container {
             display: flex;
             justify-content: space-between;
@@ -131,6 +143,7 @@
             flex: 1;
             margin: 0 5px;
         }
+
         .login-container {
             padding: 20px;
             background: linear-gradient(to bottom right, #749585, white);
@@ -147,7 +160,7 @@
         .animated-edge {
             position: absolute;
             width: 63.5%;
-            height: 208.5%;
+            height: 200.5%;
             margin-left: 17%;
         }
 
@@ -168,6 +181,7 @@
         .bottom-edge:before {
             bottom: 0;
         }
+
         @keyframes colorAnimation {
             0% {
                 background-color: #666666;
@@ -184,7 +198,7 @@
 
         .login-container {
             position: absolute;
-            top: 99.5%;
+            top: 95.5%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 75%;
@@ -194,49 +208,56 @@
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 100%;
-            font-weight:600;
+            font-weight: 600;
         }
 
         @media (max-width: 575px) {
             .login-container {
                 margin-top: 35px;
             }
-                .login-container h3 {
-                    font-size: 18px;
-                }
 
-                .animated-edge {
-                    position: absolute;
-                    width: 80%;
-                    height: 100%;
-                    margin-left: 6%;
-                }
+            .login-container h3 {
+                font-size: 18px;
             }
 
-            @media (min-width: 576px) and (max-width: 991px) {
-                .login-container {
-                    margin-top: 35px;
-                }
+            .animated-edge {
+                position: absolute;
+                width: 80%;
+                height: 100%;
+                margin-left: 6%;
+            }
+        }
 
-                .login-container h3 {
-                    font-size: 22px;
-                }
-
-                .animated-edge {
-                    position: absolute;
-                    width: 90%;
-                    height: 100%;
-                    margin-left: 3%;
-                }
+        @media (min-width: 576px) and (max-width: 991px) {
+            .login-container {
+                margin-top: 35px;
             }
 
-            @media (min-width: 992px) {
-                .login-container {
-                    margin-top: 30px;
-                }
+            .login-container h3 {
+                font-size: 22px;
             }
-            #create{
-            margin-left:45%;
+
+            .animated-edge {
+                position: absolute;
+                width: 90%;
+                height: 100%;
+                margin-left: 3%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .login-container {
+                margin-top: 30px;
+            }
+        }
+
+        #create {
+            margin-left: 45%;
+        }
+
+        .message {
+            color: red;
+            font-weight: 400;
         }
     </style>
 </head>
@@ -264,10 +285,16 @@
                                     <i class="fas fa-database me-1"></i>Device Data
                                 </a>
                             </li>
+                            {% else %}
+                            <li class="nav-item disabled">
+                                <div class="nav-link text-muted" onclick="showMessage()" style="cursor: not-allowed;">
+                                    <i class="fas fa-database me-1"></i>Device Data
+                                </div>
+                            </li>
                             {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link text-white" href="/Shipment">
-                                    <i class="fas fa-box me-1"></i>Shipments
+                                    <i class="fas fa-box me-1"></i>Create Shipments
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -306,9 +333,9 @@
                 <form action="/Shipment" method="post">
                     <div class="form-group">
                         <label for="ShipNum">Shipment Number<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="ShipNum" name="ShipNum"
-                            pattern="[0-9]{8}" title="Please enter an 8-digit number" placeholder="Enter Shipment Number" required>
-                        </div>
+                        <input type="text" class="form-control" id="ShipNum" name="ShipNum" pattern="[0-9]{8}"
+                            title="Please enter an 8-digit number" placeholder="Enter Shipment Number" required>
+                    </div>
                     <div class="form-group">
                         <label for="RoutDet">Route Details<span class="text-danger">*</span></label>
                         <select class="form-control" id="RoutDet" name="RoutDet" required>
@@ -319,8 +346,8 @@
                             <option>USA - Houston, Texas</option>
                             <option>USA - Phoenix, Arizona</option>
                             <option>USA - Philadelphia, Pennsylvania</option>
-                            </select>
-                        </div>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="Device">Device<span class="text-danger">*</span></label>
                         <select class="form-control" id="Device" name="Device" required>
@@ -333,27 +360,28 @@
                             <option>3423778950</option>
                             <option>3357688109</option>
                             <option>3890564567</option>
-                            </select>
-                        </div>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="PoNum">PO Number<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="PoNum" name="PoNum"
-                            pattern="[0-9]{8}" title="Please enter an 8-digit number" placeholder="Enter PO Number" required>
-                        </div>
+                        <input type="text" class="form-control" id="PoNum" name="PoNum" pattern="[0-9]{8}"
+                            title="Please enter an 8-digit number" placeholder="Enter PO Number" required>
+                    </div>
                     <div class="form-group">
                         <label for="NdcNum">NDC Number<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="NdcNum" name="NdcNum"
-                            pattern="[0-9]{8}" title="Please enter an 8-digit number" placeholder="Enter NDC Number" required>
-                        </div>
+                        <input type="text" class="form-control" id="NdcNum" name="NdcNum" pattern="[0-9]{8}"
+                            title="Please enter an 8-digit number" placeholder="Enter NDC Number" required>
+                    </div>
                     <div class="form-group">
                         <label for="SeNumOfGoods">Serial number of Goods<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="SeNumOfGoods"
-                            name="SeNumOfGoods" pattern="[0-9]{8}" title="Please enter an 8-digit number" placeholder="Enter the Serial number of Goods" required>
+                        <input type="text" class="form-control" id="SeNumOfGoods" name="SeNumOfGoods" pattern="[0-9]{8}"
+                            title="Please enter an 8-digit number" placeholder="Enter the Serial number of Goods"
+                            required>
                     </div>
                     <div class="form-group">
                         <label for="ContNum">Container Number<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="ContNum" name="ContNum"
-                            pattern="[0-9]{8}" title="Please enter an 8-digit number" placeholder="Enter the Container Number" required>
+                        <input type="text" class="form-control" id="ContNum" name="ContNum" pattern="[0-9]{8}"
+                            title="Please enter an 8-digit number" placeholder="Enter the Container Number" required>
                     </div>
                     <div class="form-group">
                         <label for="GoodType">Goods Type<span class="text-danger">*</span></label>
@@ -368,28 +396,34 @@
                     </div>
                     <div class="form-group">
                         <label for="ExpDelDate">Expected Delivery Date<span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="ExpDelDate" name="ExpDelDate" oninput="TDate()" required>
+                        <input type="date" class="form-control" id="ExpDelDate" name="ExpDelDate" oninput="TDate()"
+                            required>
                     </div>
+                    <div id="error-message" style="display: none; color: red; font-weight:400;"></div>
                     <div class="form-group">
                         <label for="DelNum">Delivery Number<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" placeholder="Enter the Delivery Number" pattern="[0-9]{8}"
-                            title="Please enter an 8-digit number" required id="DelNum" name="DelNum">
+                        <input type="text" class="form-control" placeholder="Enter the Delivery Number"
+                            pattern="[0-9]{8}" title="Please enter an 8-digit number" required id="DelNum"
+                            name="DelNum">
                     </div>
                     <div class="form-group">
                         <label for="BatchId">Batch Id<span class="text-danger">*</span></label>
-                        <input type="text" placeholder=" Enter the Batch Id" required
-                            id="BatchId" name="BatchId" class="form-control" pattern="[0-9]{8}" title="Please enter an 8-digit number">
+                        <input type="text" placeholder=" Enter the Batch Id" required id="BatchId" name="BatchId"
+                            class="form-control" pattern="[0-9]{8}" title="Please enter an 8-digit number">
                     </div>
                     <div class="form-group">
                         <label for="ShipDes">Shipment Description<span class="text-danger">*</span></label>
-                        <textarea placeholder="Enter Shipment Description" class="form-control"
-                            required id="ShipDes" name="ShipDes" cols="25" rows="2" pattern="/^[A-Za-z0-9 ,.'-:;['\x22]+@#%&*(){}?]{2,200}$/"></textarea>
+                        <textarea placeholder="Enter Shipment Description" class="form-control" required id="ShipDes"
+                            name="ShipDes" cols="25" rows="2"
+                            pattern="/^[A-Za-z0-9 ,.'-:;['\x22]+@#%&*(){}?]{2,200}$/"></textarea>
                     </div>
                     <div class="form-group text-center">
                         <div class="col-sm-offset-4 col-sm-8">
                             <div class="btn-container">
-                                <button type="submit" id="create" class="btn btn-primary btn-block button-signup">Submit</button>
-                                <button type="reset" id="clear" class="btn btn-default btn-block button-signup">Clear Details</button>
+                                <button type="submit" id="create"
+                                    class="btn btn-primary btn-block button-signup">Submit</button>
+                                <button type="reset" id="clear" class="btn btn-default btn-block button-signup">Clear
+                                    Details</button>
                             </div>
                         </div>
                     </div>
@@ -405,12 +439,18 @@
         function TDate() {
             var UserDate = document.getElementById("ExpDelDate").value;
             var ToDate = new Date();
+            var errorMessage = document.getElementById("error-message");
+
             if (new Date(UserDate).getTime() < ToDate.getTime()) {
                 document.getElementById("ExpDelDate").value = "";
-                alert("The Date must be Bigger than today date");
-            }
-            else {
-                pass
+                errorMessage.textContent = "The date must be later than today's date";
+                errorMessage.style.display = "block";
+
+                setTimeout(function () {
+                    errorMessage.style.display = "none";
+                }, 2000); 
+            } else {
+                errorMessage.style.display = "none";
             }
         }
         const navbar = document.querySelector('.navbar');
@@ -437,9 +477,9 @@
 
         window.onload = function () {
             var truck = document.getElementById("truck");
-            var truckX = 0; 
+            var truckX = 0;
 
-            var truckDirection = 1; 
+            var truckDirection = 1;
 
             var truckSpeed = 5;
             function animateTruck() {
@@ -464,7 +504,7 @@
                 }
             });
         });
-        
+
         var sessionTimeout = 10 * 60 * 1000;
         var timeout;
         function startSessionTimeout() {
@@ -476,7 +516,19 @@
         }
         document.addEventListener("mousemove", startSessionTimeout);
         document.addEventListener("keydown", startSessionTimeout);
+        function showMessage() {
+            var message = document.createElement("div");
+            message.className = "message";
+            message.innerHTML = "You do not have permission to access Device Data.";
 
+            var container = document.getElementsByClassName("nav-item")[1];
+            container.appendChild(message);
+
+            setTimeout(function () {
+                container.removeChild(message);
+            }, 2000);
+        }
     </script>
 </body>
+
 </html>
