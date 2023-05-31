@@ -1,14 +1,15 @@
-import json 
-import socket 
+import json
+import socket
 from kafka import KafkaProducer
-import os 
+import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 PORT = int(os.getenv("PORT"))
 SERVER = os.getenv("SERVER")
-bootstrap_servers=os.getenv("bootstrap_servers")
-topicName=os.getenv("topicName")
+bootstrap_servers = os.getenv("bootstrap_servers")
+topicName = os.getenv("topicName")
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.connect((SERVER, PORT))
@@ -17,10 +18,10 @@ producer = KafkaProducer(
     api_version=(0, 11, 5),
     value_serializer=lambda m: json.dumps(m).encode("utf-8"),
     retries=5
-) 
+)
 
 try:
-    for i in range(20):
+    while True:  # Infinite loop for continuous data generation
         content = server_socket.recv(1024).decode('utf-8')
         info = json.loads(content)
         data = {
@@ -32,7 +33,8 @@ try:
         }
         producer.send(topicName, value=data)
         print(data)
-    producer.flush()
-except Exception as e: 
-    print(e) 
-server_socket.close()
+
+except Exception as e:
+    print(e)
+finally:
+    producer.close()

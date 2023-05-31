@@ -8,21 +8,22 @@ from fastapi import HTTPException
 
 load_dotenv()
 
-topicName=os.getenv("topicName")
-mongouri=os.getenv("mongouri")
-from pymongo.errors import ConnectionFailure 
-mongouri=os.getenv("mongouri")
+topicName = os.getenv("topicName")
+mongouri = os.getenv("mongouri")
+from pymongo.errors import ConnectionFailure
+
+mongouri = os.getenv("mongouri")
 try:
     client = pymongo.MongoClient(mongouri)
-except ConnectionFailure as e:#Handle the Connection Error
+except ConnectionFailure as e:  # Handle the Connection Error
     error_msg = f"Error connecting to the database: {e}"
     print(error_msg)
     raise HTTPException(status_code=500, detail=error_msg)
 
-database=os.getenv("database")
-collection=os.getenv("collection")
+database = os.getenv("database")
+collection = os.getenv("collection")
 deviceData = client[database][collection]
-bootstrap_servers=os.getenv('bootstrap_servers')
+bootstrap_servers = os.getenv('bootstrap_servers')
 
 class DeviceData(BaseModel):
     Battery_Level: float
@@ -35,6 +36,7 @@ consumer = KafkaConsumer(topicName,
                          group_id='my-group',
                          api_version=(0, 11, 5),
                          bootstrap_servers=bootstrap_servers)
+
 try:
     for message in consumer:
         data_dict = json.loads(message.value.decode('utf-8'))
@@ -46,5 +48,6 @@ try:
             delete_result = deviceData.delete_many({"_id": {"$nin": document_ids_to_keep}})
         print(data)
         deviceData.insert_one(data.dict())
-except Exception as e: 
-    pass
+
+except KeyboardInterrupt:
+    consumer.close()
