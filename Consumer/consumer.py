@@ -46,7 +46,6 @@ try:
             documents_to_keep = deviceData.find().sort("_id", -1).limit(20)
             document_ids_to_keep = [doc['_id'] for doc in documents_to_keep]
             delete_result = deviceData.delete_many({"_id": {"$nin": document_ids_to_keep}})
-        print(data)
         deviceData.insert_one(data.dict())
 
 except KeyboardInterrupt:
