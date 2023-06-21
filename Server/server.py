@@ -41,7 +41,6 @@ while connected:
                 }
                 userdata = (json.dumps(data, indent=1)).encode(FORMAT)
                 conn.send(userdata)
-                print(userdata)
                 time.sleep(10)
             else:
                 continue

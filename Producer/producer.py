@@ -32,8 +32,6 @@ try:
             "Route_To": info['Route_To']
         }
         producer.send(topicName, value=data)
-        print(data)
-
 except Exception as e:
     print(e)
 finally:

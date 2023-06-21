@@ -22,7 +22,6 @@ try:
     client = pymongo.MongoClient(mongouri)
 except ConnectionFailure as e:#Handle the Connection Error
     error_msg = f"Error connecting to the database: {e}"
-    print(error_msg)
     raise HTTPException(status_code=500, detail=error_msg)
 
 
