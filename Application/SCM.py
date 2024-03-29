@@ -471,7 +471,7 @@ def EmailCheck(request: Request):
 
 #Post for EmailChecking for Forgot Password
 @app.post("/Emailcheck/ForForgotpass", response_class=HTMLResponse, name="EmailCheck")
-async def EmailCheck(request: Request, email: str = Form(...)):
+def EmailCheck(request: Request, email: str = Form(...)):
     global mainOtp
     user =signUp.find_one({"email": email})
     if user:
